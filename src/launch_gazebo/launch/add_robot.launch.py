@@ -36,7 +36,7 @@ def generate_launch_description():
     # driving swarm 
     robot_file = os.path.join(get_package_share_directory('ros2swarm'), 'param', 'ROS2swarm_sim.yaml')
     map_file = os.path.join(launch_file_dir, 'maps', 'default.yaml') 
-    tf_exchange_dir = get_package_share_directory('tf_exchange')
+    #tf_exchange_dir = get_package_share_directory('tf_exchange')
     
     for arg in sys.argv:
         if arg.startswith("start_index:="):  # The start index for the robots number
@@ -72,6 +72,7 @@ def generate_launch_description():
                 map_file = os.path.join(launch_file_dir, 'maps', yaml_file)
         else:
             if arg not in ['/opt/ros/foxy/bin/ros2',
+                           '/opt/ros/humble/bin/ros2',      #added humble
                            'launch',
                            'launch_gazebo',
                            'add_robot.launch.py']:
@@ -113,6 +114,9 @@ def generate_launch_description():
         robot_type = "limo"
         baseframe = 'base_link'  
         #gazebo_flag = False
+    elif robot_type.startswith('turtlebot4'):
+        robot_type = "turtlebot4",                  #added turtlebot4
+        baseframe = 'base_link' 
 
     print("robot type       |", robot_type)
     print("---------------------------------------")
@@ -140,6 +144,10 @@ def generate_launch_description():
         urdf_file_name = 'limo_four_diff.xacro'
         urdf_file = os.path.join(get_package_share_directory('limo_description'), 'urdf', urdf_file_name)
 
+    elif robot_type.startswith('turtlebot4'):
+        urdf_file_name = 'turtlebot4.urdf.xacro'
+        urdf_file = os.path.join(get_package_share_directory('turtlebot4_description'), 'urdf', 'standard', urdf_file_name)
+
     launch_pattern_dir = os.path.join(get_package_share_directory('ros2swarm'), 'launch', 'pattern')
     launch_bringup_dir = os.path.join(get_package_share_directory('ros2swarm'))
 
@@ -164,17 +172,17 @@ def generate_launch_description():
 		    )
             ld.add_action(rviz)
                 
-            # DRIVING SWARM 
-            tf_exchange = IncludeLaunchDescription(
-	                      PythonLaunchDescriptionSource(
-		                   os.path.join(tf_exchange_dir, 'launch', 'tf_exchange.launch.py')),
-		                   launch_arguments={
-		                   'namespace': ['robot_', str(num)],
-		                   'robot_name': ['robot_', str(num)],
-		                   'base_frame': baseframe,
-		                  }.items()
-		          )
-            ld.add_action(tf_exchange) 
+            # # DRIVING SWARM 
+            # tf_exchange = IncludeLaunchDescription(
+	        #               PythonLaunchDescriptionSource(
+		    #                os.path.join(tf_exchange_dir, 'launch', 'tf_exchange.launch.py')),
+		    #                launch_arguments={
+		    #                'namespace': ['robot_', str(num)],
+		    #                'robot_name': ['robot_', str(num)],
+		    #                'base_frame': baseframe,
+		    #               }.items()
+		    #       )
+            # ld.add_action(tf_exchange) 
         
 
         # add gazebo node

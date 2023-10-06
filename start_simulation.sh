@@ -20,14 +20,14 @@ source ./install/setup.bash &&
  number_robots:=4 \
  total_robots:=4 \
  log_level:=info \
- robot:=burger \
+ robot:=turtlebot4 \
  sensor_type:=lidar \
  x_start:=0.0 \
  x_dist:=0.0 \
  y_start:=0.0 \
  y_dist:=1.0 \
  driving_swarm:=False \
- logging:=True 
+ logging:=False 
 
  
 # to add heterogeneous swarm / robots  
@@ -57,7 +57,7 @@ source ./install/setup.bash &&
 
 # number_robots: num_robots
 # log_level: info | DEBUG
-# robot: burger | waffle_pi | jackal | thymio
+# robot: burger | waffle_pi | jackal | thymio | turtlebot4
 # sensor_type: lidar | ir | ir_tf
 # driving_swarm: true | false - use driving swarm framework by OVGU Magdeburg
 
