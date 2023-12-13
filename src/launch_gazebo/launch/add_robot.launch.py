@@ -21,10 +21,11 @@ import os
 import sys
 import launch_ros.actions
 from launch import LaunchDescription
-from launch.substitutions import LaunchConfiguration
+from launch.substitutions import LaunchConfiguration, PathJoinSubstitution
 from ament_index_python.packages import get_package_share_directory
 from launch.actions import IncludeLaunchDescription
 from launch.launch_description_sources import PythonLaunchDescriptionSource
+from launch_ros.substitutions import FindPackageShare
 
 
 def generate_launch_description():
@@ -36,7 +37,6 @@ def generate_launch_description():
     # driving swarm 
     robot_file = os.path.join(get_package_share_directory('ros2swarm'), 'param', 'ROS2swarm_sim.yaml')
     map_file = os.path.join(launch_file_dir, 'maps', 'default.yaml') 
-    #tf_exchange_dir = get_package_share_directory('tf_exchange')
     
     for arg in sys.argv:
         if arg.startswith("start_index:="):  # The start index for the robots number
@@ -115,7 +115,7 @@ def generate_launch_description():
         baseframe = 'base_link'  
         #gazebo_flag = False
     elif robot_type.startswith('turtlebot4'):
-        robot_type = "turtlebot4",                  #added turtlebot4
+        robot_type = "turtlebot4"                  #added turtlebot4
         baseframe = 'base_link' 
 
     print("robot type       |", robot_type)
@@ -132,7 +132,7 @@ def generate_launch_description():
     elif robot_type.startswith('thymio'):
         urdf_file_name = 'thymio.urdf'
         urdf_file = os.path.join(get_package_share_directory('thymio_description'), 'urdf', urdf_file_name)
-    elif robot_type.startwith('jackal'):
+    elif robot_type.startswith('jackal'):
         
         config_jackal_velocity_controller = PathJoinSubstitution(
             [FindPackageShare('jackal_control'), 'config', 'control.yaml']
@@ -140,7 +140,7 @@ def generate_launch_description():
         
         urdf_file_name = 'jackal.urdf.xacro'
         urdf_file = os.path.join(get_package_share_directory('jackal_description'), 'urdf', urdf_file_name)
-    elif robot_type.startwith('limo'):
+    elif robot_type.startswith('limo'):
         urdf_file_name = 'limo_four_diff.xacro'
         urdf_file = os.path.join(get_package_share_directory('limo_description'), 'urdf', urdf_file_name)
 
@@ -155,6 +155,8 @@ def generate_launch_description():
     for i in range(number_robots):
         
         if driving_swarm == 'True': 
+            tf_exchange_dir = get_package_share_directory('tf_exchange')
+
             num = i + start_index
                 
             rviz_config_file = LaunchConfiguration('rviz_config_file', default=os.path.join(get_package_share_directory('driving_swarm_bringup'), 'rviz', 'custom.rviz'))
@@ -172,17 +174,17 @@ def generate_launch_description():
 		    )
             ld.add_action(rviz)
                 
-            # # DRIVING SWARM 
-            # tf_exchange = IncludeLaunchDescription(
-	        #               PythonLaunchDescriptionSource(
-		    #                os.path.join(tf_exchange_dir, 'launch', 'tf_exchange.launch.py')),
-		    #                launch_arguments={
-		    #                'namespace': ['robot_', str(num)],
-		    #                'robot_name': ['robot_', str(num)],
-		    #                'base_frame': baseframe,
-		    #               }.items()
-		    #       )
-            # ld.add_action(tf_exchange) 
+            # DRIVING SWARM 
+            tf_exchange = IncludeLaunchDescription(
+	                      PythonLaunchDescriptionSource(
+		                   os.path.join(tf_exchange_dir, 'launch', 'tf_exchange.launch.py')),
+		                   launch_arguments={
+		                   'namespace': ['robot_', str(num)],
+		                   'robot_name': ['robot_', str(num)],
+		                   'base_frame': baseframe,
+		                  }.items()
+		          )
+            ld.add_action(tf_exchange) 
         
 
         # add gazebo node

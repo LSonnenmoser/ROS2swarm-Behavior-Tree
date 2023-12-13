@@ -94,18 +94,18 @@ def generate_launch_description():
                        remappings=[('/tf', 'tf'), ('/tf_static', 'tf_static')]
   	            ),
   	
-  	# add state publisher for thymio 
-  	launch_ros.actions.Node(
-	    package='robot_state_publisher',
-	    executable='robot_state_publisher',
-	    namespace=robot_namespace,
-	    output='screen',
-	    condition=LaunchConfigurationEquals('robot_type', 'thymio'),
-	    parameters=[{'use_sim_time': use_sim_time,
-	 	             }],
-	    arguments=[urdf_file, '--ros-args', '--log-level', 'warn'],
-            remappings=[('/tf', 'tf'), ('/tf_static', 'tf_static')]
-        ),
+        # add state publisher for thymio 
+        launch_ros.actions.Node(
+            package='robot_state_publisher',
+            executable='robot_state_publisher',
+            namespace=robot_namespace,
+            output='screen',
+            condition=LaunchConfigurationEquals('robot_type', 'thymio'),
+            parameters=[{'use_sim_time': use_sim_time,
+                        }],
+            arguments=[urdf_file, '--ros-args', '--log-level', 'warn'],
+                remappings=[('/tf', 'tf'), ('/tf_static', 'tf_static')]
+            ),
   	            
 
         IncludeLaunchDescription(

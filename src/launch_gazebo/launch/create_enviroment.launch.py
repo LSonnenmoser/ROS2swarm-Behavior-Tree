@@ -16,6 +16,7 @@ import os
 import sys
 import launch_ros.actions
 
+import pathlib
 from launch import LaunchDescription
 from launch.event_handlers import OnProcessExit
 from launch.events import Shutdown
@@ -23,7 +24,8 @@ from launch.actions import IncludeLaunchDescription, DeclareLaunchArgument, Regi
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from ament_index_python.packages import get_package_share_directory
 from launch_ros.substitutions import FindPackageShare
-from launch.substitutions import LaunchConfiguration
+from launch.substitutions import LaunchConfiguration, PathJoinSubstitution
+
 from launch_ros.actions import Node
 
 def generate_launch_description():
@@ -35,7 +37,6 @@ def generate_launch_description():
     # driving swarm 
     robot_file = os.path.join(get_package_share_directory('ros2swarm'), 'param', 'ROS2swarm_sim.yaml')
     map_file = os.path.join(launch_file_dir, 'maps', 'default.yaml') 
-    #tf_exchange_dir = get_package_share_directory('tf_exchange')
     
     ld = LaunchDescription()
     
@@ -137,93 +138,137 @@ def generate_launch_description():
     
     
     if gazebo_flag:
-        # Add gazebo start script
-        gazebo_start = IncludeLaunchDescription(
-            PythonLaunchDescriptionSource([launch_file_dir, '/start_gazebo.launch.py']),
-            launch_arguments={'world_name': world_file_name}.items(),
-        )
-        ld.add_action(gazebo_start)
-        
-        state_node = Node(package="launch_gazebo",
-                          executable="ground_truth_publisher",
-                          output="screen",
-                          parameters=[{
-                          'use_sim_time': True,
-                          }])
-        ld.add_action(state_node)
-        
-        # driving swarm 
-        if driving_swarm == 'True': 
-            run_timeout = LaunchConfiguration('run_timeout', default=5)
-            init_timeout = LaunchConfiguration('init_timeout', default=0)
-        
-            command_node = Node(package="experiment_supervisor",
-                        executable="command_node",
-                        output="screen",
-                        parameters=[{
-                           'use_sim_time': True,
-                           'run_timeout': run_timeout,
-                           'init_timeout': init_timeout,
-                           'robots': ['robot_' + str(i) for i in range(number_robots)],
-                           }])
 
-            exit_event_handler = RegisterEventHandler(event_handler=OnProcessExit(
-                                                      target_action=command_node,
-                                                      on_exit=EmitEvent(event=Shutdown(reason="command node exited"))
-                                                      )
-                                                  )
-            ld.add_action(command_node)
-            ld.add_action(exit_event_handler)
+        if robot_type == "turtlebot4" :
+                
+            ARGUMENTS = [
+                    DeclareLaunchArgument('rviz', default_value='false',choices=['true', 'false'], description='Start rviz.'),
+                    DeclareLaunchArgument('world', default_value='ignition', description='Ignition World'),
+                    DeclareLaunchArgument('model', default_value='standard',choices=['standard', 'lite'],description='Turtlebot4 Model'),
+                ]
+            for pose_element in ['x', 'y', 'z', 'yaw']:
+                ARGUMENTS.append(DeclareLaunchArgument(pose_element, default_value='0.0',
+                                description=f'{pose_element} component of the robot pose.'))
+            # Paths
+            ignition_launch = PathJoinSubstitution(
+                [str(pathlib.Path(__file__).parent.resolve()), 'ignition.launch.py'])
+            robot_spawn_launch = PathJoinSubstitution(
+                [str(pathlib.Path(__file__).parent.resolve()), 'turtlebot4_spawn.launch.py'])
 
-        for i in range(number_robots):
-        
-            if driving_swarm == 'True': 
-                rviz_config_file = LaunchConfiguration('rviz_config_file', default=os.path.join(get_package_share_directory('driving_swarm_bringup'), 'rviz', 'custom.rviz'))
-                
-                rviz = IncludeLaunchDescription(
-	                   PythonLaunchDescriptionSource(
-		            os.path.join(get_package_share_directory('nav2_bringup'), 'launch', 'rviz_launch.py')),
-		        #condition=IfCondition(LaunchConfiguration('use_rviz')),
-		        launch_arguments={
-		            'namespace': ['robot_', str(i)],
-		            'use_namespace': 'true',
-		            'use_sim_time': 'true',
-		            'rviz_config': rviz_config_file
-		        }.items()
-		    )
-                ld.add_action(rviz)
-                
-            #     # DRIVING SWARM 
-            #     tf_exchange = IncludeLaunchDescription(
-		    #     PythonLaunchDescriptionSource(
-		    #         os.path.join(tf_exchange_dir, 'launch', 'tf_exchange.launch.py')),
-		    #         launch_arguments={
-		    #         'namespace': ['robot_', str(i)],
-		    #         'robot_name': ['robot_', str(i)],
-		    #         'base_frame': baseframe,
-		    #     }.items()
-		    # )
-            #     ld.add_action(tf_exchange) 
-            
-            
-            # add gazebo node
-            gazebo_node = launch_ros.actions.Node(
-                package='launch_gazebo',
-                executable='add_bot_node',
-                namespace=['namespace_', str(i)],
-                name=['gazeboRobotNode_', str(i)],
-                output='screen',
-                arguments=[
-                    '--robot_name', ['robot_', str(i)],
-                    '--robot_namespace', ['robot_', str(i)],
-                    '-x', str(x_start + i * x_dist),
-                    '-y', str(y_start + i * y_dist),
-                    '-z', '0.1',
-                    '--type_of_robot', robot,
-                    '-ds', driving_swarm, 
+            ignition = IncludeLaunchDescription(
+                PythonLaunchDescriptionSource([ignition_launch]),
+                launch_arguments=[
+                    ('world', LaunchConfiguration('world'))
                 ]
             )
-            ld.add_action(gazebo_node)
+            # Create launch description and add actions
+            ld = LaunchDescription(ARGUMENTS)
+            ld.add_action(ignition)
+
+            for i in range(number_robots):
+                robot_spawn = IncludeLaunchDescription(
+                    PythonLaunchDescriptionSource([robot_spawn_launch]),
+                    launch_arguments=[
+                        ('namespace', 'robot_'+str(i)),
+                        ('rviz', LaunchConfiguration('rviz')),
+                        ('x', LaunchConfiguration('x')),
+                        ('y', LaunchConfiguration('y')),
+                        ('z', LaunchConfiguration('z')),
+                        ('yaw', LaunchConfiguration('yaw'))]
+                )   
+                ld.add_action(robot_spawn) 
+        else:
+            # Add gazebo start script
+            gazebo_start = IncludeLaunchDescription(
+                PythonLaunchDescriptionSource([launch_file_dir, '/start_gazebo.launch.py']),
+                launch_arguments={'world_name': world_file_name}.items(),
+            )
+            ld.add_action(gazebo_start)
+            
+            state_node = Node(package="launch_gazebo",
+                            executable="ground_truth_publisher",
+                            output="screen",
+                            parameters=[{
+                            'use_sim_time': True,
+                            }])
+            ld.add_action(state_node)
+            
+            # driving swarm 
+            if driving_swarm == 'True': 
+                tf_exchange_dir = get_package_share_directory('tf_exchange')
+
+                run_timeout = LaunchConfiguration('run_timeout', default=5)
+                init_timeout = LaunchConfiguration('init_timeout', default=0)
+            
+                command_node = Node(package="experiment_supervisor",
+                            executable="command_node",
+                            output="screen",
+                            parameters=[{
+                            'use_sim_time': True,
+                            'run_timeout': run_timeout,
+                            'init_timeout': init_timeout,
+                            'robots': ['robot_' + str(i) for i in range(number_robots)],
+                            }])
+
+                exit_event_handler = RegisterEventHandler(event_handler=OnProcessExit(
+                                                        target_action=command_node,
+                                                        on_exit=EmitEvent(event=Shutdown(reason="command node exited"))
+                                                        )
+                                                    )
+                ld.add_action(command_node)
+                ld.add_action(exit_event_handler)
+
+            for i in range(number_robots):
+            
+                if driving_swarm == 'True': 
+                    rviz_config_file = LaunchConfiguration('rviz_config_file', default=os.path.join(get_package_share_directory('driving_swarm_bringup'), 'rviz', 'custom.rviz'))
+                    
+                    rviz = IncludeLaunchDescription(
+                        PythonLaunchDescriptionSource(
+                        os.path.join(get_package_share_directory('nav2_bringup'), 'launch', 'rviz_launch.py')),
+                    #condition=IfCondition(LaunchConfiguration('use_rviz')),
+                    launch_arguments={
+                        'namespace': ['robot_', str(i)],
+                        'use_namespace': 'true',
+                        'use_sim_time': 'true',
+                        'rviz_config': rviz_config_file
+                    }.items()
+                )
+                    ld.add_action(rviz)
+                    
+                    # DRIVING SWARM 
+                    tf_exchange = IncludeLaunchDescription(
+                    PythonLaunchDescriptionSource(
+                        os.path.join(tf_exchange_dir, 'launch', 'tf_exchange.launch.py')),
+                        launch_arguments={
+                        'namespace': ['robot_', str(i)],
+                        'robot_name': ['robot_', str(i)],
+                        'base_frame': baseframe,
+                    }.items()
+                )
+                    ld.add_action(tf_exchange) 
+                
+                if robot_type != "turtlebot4" :
+                    
+                    # add gazebo node
+                    gazebo_node = launch_ros.actions.Node(
+                        package='launch_gazebo',
+                        executable='add_bot_node',
+                        namespace=['namespace_', str(i)],
+                        name=['gazeboRobotNode_', str(i)],
+                        output='screen',
+                        arguments=[
+                            '--robot_name', ['robot_', str(i)],
+                            '--robot_namespace', ['robot_', str(i)],
+                            '-x', str(x_start + i * x_dist),
+                            '-y', str(y_start + i * y_dist),
+                            '-z', '0.1',
+                            '--type_of_robot', robot,
+                            '-ds', driving_swarm, 
+                        ]
+                    )
+                    ld.add_action(gazebo_node)
+
 
     config_dir = os.path.join(get_package_share_directory('ros2swarm'), 'config', robot_type)
 
@@ -292,6 +337,6 @@ def generate_launch_description():
         )
     
         ld.add_action(rosbag_recording)
-    
+   
 
     return ld

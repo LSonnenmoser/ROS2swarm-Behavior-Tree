@@ -45,6 +45,16 @@ setup(
          glob('config/waffle_pi/movement_pattern/combined/*.yaml')),
         (os.path.join('share', package_name, 'config', 'waffle_pi', 'voting_pattern', 'basic'),
          glob('config/waffle_pi/voting_pattern/basic/*.yaml')),
+                 
+        (os.path.join('share', package_name, 'config', 'turtlebot4'), glob('config/turtlebot4/*.yaml')),
+        (os.path.join('share', package_name, 'config', 'turtlebot4', 'movement_pattern'),
+         glob('config/turtlebot4/movement_pattern/*.yaml')),
+        (os.path.join('share', package_name, 'config', 'turtlebot4', 'movement_pattern', 'basic'),
+         glob('config/turtlebot4/movement_pattern/basic/*.yaml')),
+        (os.path.join('share', package_name, 'config', 'turtlebot4', 'movement_pattern', 'combined'),
+         glob('config/turtlebot4/movement_pattern/combined/*.yaml')),
+        (os.path.join('share', package_name, 'config', 'turtlebot4', 'voting_pattern', 'basic'),
+         glob('config/turtlebot4/voting_pattern/basic/*.yaml')),
 
         (os.path.join('share', package_name, 'config', 'jackal'), glob('config/jackal/*.yaml')),
         (os.path.join('share', package_name, 'config', 'jackal', 'movement_pattern'),

@@ -70,6 +70,7 @@ def generate_launch_description():
 
     robot_type = robot
     robot_node = True
+    turtlebot4= False
     if robot_type.startswith('burger'):
         robot_type = "burger"
     elif robot_type.startswith('waffle_pi'):
@@ -85,6 +86,7 @@ def generate_launch_description():
         robot_node = False
     elif robot_type.startswith('turtlebot4'):
         robot_type = "turtlebot4"
+        turtlebot4 = True
 
     ld = LaunchDescription()
 
@@ -98,19 +100,24 @@ def generate_launch_description():
     ])
     ld.add_action(log)
 
-    if robot_node:
-        # add turtle node
-        turtle_namespace = ['robot_', str(robot_number)]
-        turtle_node = IncludeLaunchDescription(
-            PythonLaunchDescriptionSource([launch_file_dir, '/turtlebot3_bringup.launch.py']),
-            launch_arguments={'turtle_namespace': turtle_namespace,
-                              'pattern': pattern,
-                              'robot': robot}.items(),
-        )
-        ld.add_action(turtle_node)
+    if turtlebot4:
+        urdf_file_name = 'turtlebot4.urdf.xacro'
+        urdf_file = os.path.join(get_package_share_directory('turtlebot4_description'), 'urdf', 'standard', urdf_file_name)
 
-    urdf_file_name = 'turtlebot3_' + robot + '.urdf'
-    urdf_file = os.path.join(get_package_share_directory('turtlebot3_description'), 'urdf', urdf_file_name)
+    else:
+        if robot_node:
+            # add turtle node
+            turtle_namespace = ['robot_', str(robot_number)]
+            turtle_node = IncludeLaunchDescription(
+                PythonLaunchDescriptionSource([launch_file_dir, '/turtlebot3_bringup.launch.py']),
+                launch_arguments={'turtle_namespace': turtle_namespace,
+                                'pattern': pattern,
+                                'robot': robot}.items(),
+            )
+            ld.add_action(turtle_node)
+
+        urdf_file_name = 'turtlebot3_' + robot + '.urdf'
+        urdf_file = os.path.join(get_package_share_directory('turtlebot3_description'), 'urdf', urdf_file_name)
 
     config_dir = os.path.join(get_package_share_directory('ros2swarm'), 'config', robot_type)
 
@@ -125,12 +132,12 @@ def generate_launch_description():
     launch_patterns = IncludeLaunchDescription(
         PythonLaunchDescriptionSource([launch_file_dir, '/' + 'bringup_patterns.launch.py']),
         launch_arguments={'robot': robot,
-                          'robot_type': robot_type,
-                          'robot_namespace': ['robot_', str(robot_number)],
-                          'pattern': pattern_path,
-                          'config_dir': config_dir,
-                          'urdf_file': urdf_file
-                          }.items(),
+                        'robot_type': robot_type,
+                        'robot_namespace': ['robot_', str(robot_number)],
+                        'pattern': pattern_path,
+                        'config_dir': config_dir,
+                        'urdf_file': urdf_file
+                        }.items(),
     )
     ld.add_action(launch_patterns)
 
