@@ -26,7 +26,7 @@ from ros2swarm.voting_pattern.voting_pattern import VotingPattern
 import datetime
 
 
-class MajorityRulePatternBT(py_trees.behaviour.Behaviour,VotingPattern):
+class MajorityRulePatternBT(VotingPattern, py_trees.behaviour.Behaviour):
     """
     Implementation of the Majority Rule.
 
@@ -39,7 +39,8 @@ class MajorityRulePatternBT(py_trees.behaviour.Behaviour,VotingPattern):
 
     def __init__(self):
         """Initialize the majority rule pattern node."""
-        super().__init__('majority_rule_pattern')
+        VotingPattern.__init__(self,'majority_rule_pattern')
+        py_trees.behaviour.Behaviour.__init__(self,'majority_rule_pattern')
         self.declare_parameters(
             namespace='',
             parameters=[
@@ -49,7 +50,6 @@ class MajorityRulePatternBT(py_trees.behaviour.Behaviour,VotingPattern):
                 ('majority_rule_max_opinion', 0),
                 ('majority_rule_timer_period', 0.0),
             ])
-        super(MajorityRulePatternBT, self).__init__('majority_rule_pattern')
         
     
 
@@ -90,7 +90,6 @@ class MajorityRulePatternBT(py_trees.behaviour.Behaviour,VotingPattern):
         # define time period to listen to other opinions
         self.timer = self.create_timer(param_timer_period, self.swarm_command_controlled_timer(self.timer_callback))
         
-        rclpy.init()
 
 
     def setup(self): 
@@ -120,11 +119,9 @@ class MajorityRulePatternBT(py_trees.behaviour.Behaviour,VotingPattern):
 
         self.logger.debug("  %s [Foo::update()]" % self.name)
 
-        rclpy.spin_once(MajorityRulePatternBT())
+        self.feedback_message = "spin pattern once"
 
-        self.feedback_message = "spin drive pattern once"
-
-        return py_trees.common.Status.SUCCESS
+        return py_trees.common.Status.RUNNING
 
     def terminate(self, new_status):
 
@@ -133,7 +130,6 @@ class MajorityRulePatternBT(py_trees.behaviour.Behaviour,VotingPattern):
         self.logger.debug("  %s [Foo::terminate().terminate()][%s->%s]" % (self.name, self.status, new_status))
         
         MajorityRulePatternBT.destroy_node()
-        rclpy.shutdown()
 
     def timer_callback(self):
         """Select a new opinion of another entity and emit the own opinion."""

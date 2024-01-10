@@ -25,7 +25,7 @@ from ros2swarm.utils.state import State
 from ros2swarm.utils.scan_calculation_functions import ScanCalculationFunctions, ReductionOption
 
 
-class AggregationPatternBT(py_trees.behaviour.Behaviour, MovementPattern):
+class AggregationPatternBT(MovementPattern, py_trees.behaviour.Behaviour):
     """
     Pattern to reach an aggregation of the participating robots in the available area.
 
@@ -37,7 +37,8 @@ class AggregationPatternBT(py_trees.behaviour.Behaviour, MovementPattern):
 
     def __init__(self):
         """Initialize the aggregation pattern node."""
-        super().__init__('aggregation_pattern')
+        MovementPattern.__init__(self,'aggregation_pattern')
+        py_trees.behaviour.Behaviour.__init__(self,'aggregation_pattern')
         self.declare_parameters(
             namespace='',
             parameters=[
@@ -57,7 +58,6 @@ class AggregationPatternBT(py_trees.behaviour.Behaviour, MovementPattern):
                 ('max_rotational_velocity', 0.0)
             ])
         
-        super(AggregationPatternBT, self).__init__('aggregation_pattern')
 
     def setup(self): 
         """Initialize the aggregation pattern node.""" 
@@ -109,7 +109,6 @@ class AggregationPatternBT(py_trees.behaviour.Behaviour, MovementPattern):
             "max_translational_velocity").get_parameter_value().double_value
         self.param_max_rotational_velocity = self.get_parameter(
             "max_rotational_velocity").get_parameter_value().double_value
-        rclpy.init()
         
 
     def update(self):
@@ -118,11 +117,11 @@ class AggregationPatternBT(py_trees.behaviour.Behaviour, MovementPattern):
 
         self.logger.debug("  %s [Foo::update()]" % self.name)
 
-        rclpy.spin_once(AggregationPatternBT())
 
         self.feedback_message = "spin aggregation pattern once"
 
-        return py_trees.common.Status.SUCCESS
+
+        return py_trees.common.Status.RUNNING
 
     def terminate(self, new_status):
 
@@ -131,7 +130,6 @@ class AggregationPatternBT(py_trees.behaviour.Behaviour, MovementPattern):
         self.logger.debug("  %s [Foo::terminate().terminate()][%s->%s]" % (self.name, self.status, new_status))
         
         AggregationPatternBT.destroy_node()
-        rclpy.shutdown()
 
 
 

@@ -42,7 +42,7 @@ class Directions(IntEnum):
     RIGHT = 3
 
 
-class MinimalistFlockingPatternBT(py_trees.behaviour.Behaviour, MovementPattern):
+class MinimalistFlockingPatternBT(MovementPattern, py_trees.behaviour.Behaviour):
     """
     Pattern to perform a flocking of the participating robots in the available area.
 
@@ -53,7 +53,8 @@ class MinimalistFlockingPatternBT(py_trees.behaviour.Behaviour, MovementPattern)
 
     def __init__(self):
         """Initialize the minimalist flocking pattern node."""
-        super().__init__('minimalist_flocking_pattern')
+        MovementPattern.__init__(self,'minimalist_flocking_pattern')
+        py_trees.behaviour.Behaviour.__init__(self,'minimalist_flocking_pattern')
 
         self.declare_parameters(
             namespace='',
@@ -72,7 +73,6 @@ class MinimalistFlockingPatternBT(py_trees.behaviour.Behaviour, MovementPattern)
                 ('max_range', 0.0),
                 ('min_range', 0.0)
             ])
-        super(MinimalistFlockingPatternBT, self).__init__('minimalist_flocking_pattern')
         
 
         self.state = State.INIT
@@ -132,7 +132,6 @@ class MinimalistFlockingPatternBT(py_trees.behaviour.Behaviour, MovementPattern)
         self.move = Twist()
         self.move.linear.x = self.param_translational_velocity
 
-        rclpy.init()
 
     def update(self):
 
@@ -140,11 +139,10 @@ class MinimalistFlockingPatternBT(py_trees.behaviour.Behaviour, MovementPattern)
 
         self.logger.debug("  %s [Foo::update()]" % self.name)
 
-        rclpy.spin_once(MinimalistFlockingPatternBT())
 
         self.feedback_message = "spin minimalist flocking pattern once"
 
-        return py_trees.common.Status.SUCCESS
+        return py_trees.common.Status.RUNNING
 
     def terminate(self, new_status):
 
@@ -153,7 +151,6 @@ class MinimalistFlockingPatternBT(py_trees.behaviour.Behaviour, MovementPattern)
         self.logger.debug("  %s [Foo::terminate().terminate()][%s->%s]" % (self.name, self.status, new_status))
         
         MinimalistFlockingPatternBT.destroy_node()
-        rclpy.shutdown()
 
 
     def range_data_callback(self, incoming_msg):

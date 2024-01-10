@@ -61,14 +61,15 @@ def pol2cart(r, phi):
     #TODO move to a vector util place
 
 
-class RatSearchPatternBT(py_trees.behaviour.Behaviour, MovementPattern):
+class RatSearchPatternBT(MovementPattern, py_trees.behaviour.Behaviour):
     """
     Pattern to search a maze based on rat behavior.
     """
 
     def __init__(self):
         """Initialize the rat search pattern node."""
-        super().__init__('rat_search_pattern')
+        MovementPattern.__init__(self,'rat_search_pattern')
+        py_trees.behaviour.Behaviour.__init__(self,'rat_search_pattern')
         self.declare_parameters(
             namespace='',
             parameters=[
@@ -89,7 +90,6 @@ class RatSearchPatternBT(py_trees.behaviour.Behaviour, MovementPattern):
                 ('max_translational_velocity', 0.0),
                 ('max_rotational_velocity', 0.0),
             ])
-        super(RatSearchPatternBT, self).__init__('rat_search_pattern')
         
     def setup(self): 
         """Initialize the aggregation pattern node.""" 
@@ -169,7 +169,6 @@ class RatSearchPatternBT(py_trees.behaviour.Behaviour, MovementPattern):
         info = StringMessage()
         info.data = 'Starting RUN'
         self.information_publisher.publish(info)
-        rclpy.init()
 
     def update(self):
 
@@ -177,11 +176,9 @@ class RatSearchPatternBT(py_trees.behaviour.Behaviour, MovementPattern):
 
         self.logger.debug("  %s [Foo::update()]" % self.name)
 
-        rclpy.spin_once(RatSearchPatternBT())
-
         self.feedback_message = "spin minimalist flocking pattern once"
 
-        return py_trees.common.Status.SUCCESS
+        return py_trees.common.Status.RUNNING
 
     def terminate(self, new_status):
 
@@ -190,7 +187,6 @@ class RatSearchPatternBT(py_trees.behaviour.Behaviour, MovementPattern):
         self.logger.debug("  %s [Foo::terminate().terminate()][%s->%s]" % (self.name, self.status, new_status))
         
         RatSearchPatternBT.destroy_node()
-        rclpy.shutdown()
 
 
     def get_direction_batch_average(self, target_direction):

@@ -26,7 +26,7 @@ from rclpy.qos import qos_profile_sensor_data
 from ros2swarm.movement_pattern.movement_pattern import MovementPattern
 
 
-class MagnetometerPatternBT(py_trees.behaviour.Behaviour, MovementPattern):
+class MagnetometerPatternBT(MovementPattern, py_trees.behaviour.Behaviour):
     """
     Pattern to reach an orientation of the robot according to the given parameter.
 
@@ -38,7 +38,8 @@ class MagnetometerPatternBT(py_trees.behaviour.Behaviour, MovementPattern):
 
     def __init__(self):
         """Initialize the magnetometer pattern node."""
-        super().__init__('magnetometer_pattern')
+        MovementPattern.__init__(self,'magnetometer_pattern')
+        py_trees.behaviour.Behaviour.__init__(self,'magnetometer_pattern')
         self.declare_parameters(
             namespace='',
             parameters=[
@@ -51,7 +52,6 @@ class MagnetometerPatternBT(py_trees.behaviour.Behaviour, MovementPattern):
                 ('max_rotational_velocity', 0.0),
                 ('lidar_config', 3)
             ])
-        super(MagnetometerPatternBT, self).__init__('magnetometer_pattern')
         
     def setup(self): 
         """Initialize the aggregation pattern node.""" 
@@ -94,7 +94,6 @@ class MagnetometerPatternBT(py_trees.behaviour.Behaviour, MovementPattern):
             "lidar_config").get_parameter_value().double_value if self.get_parameter(
             "lidar_config").get_parameter_value().type == 3 else None
         
-        rclpy.init()
     
     def update(self):
 
@@ -102,11 +101,10 @@ class MagnetometerPatternBT(py_trees.behaviour.Behaviour, MovementPattern):
 
         self.logger.debug("  %s [Foo::update()]" % self.name)
 
-        rclpy.spin_once(MagnetometerPatternBT())
 
         self.feedback_message = "spin magnetometer pattern once"
 
-        return py_trees.common.Status.SUCCESS
+        return py_trees.common.Status.RUNNING
 
     def terminate(self, new_status):
 
@@ -115,7 +113,6 @@ class MagnetometerPatternBT(py_trees.behaviour.Behaviour, MovementPattern):
         self.logger.debug("  %s [Foo::terminate().terminate()][%s->%s]" % (self.name, self.status, new_status))
         
         MagnetometerPatternBT.destroy_node()
-        rclpy.shutdown()
 
         
 

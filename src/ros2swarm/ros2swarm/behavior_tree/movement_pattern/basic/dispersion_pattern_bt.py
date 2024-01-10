@@ -24,7 +24,7 @@ from ros2swarm.utils.scan_calculation_functions import ScanCalculationFunctions
 from communication_interfaces.msg import DoubleMessage, RangeData
 
 
-class DispersionPatternBT(py_trees.behaviour.Behaviour, MovementPattern):
+class DispersionPatternBT(MovementPattern, py_trees.behaviour.Behaviour):
     """
     Pattern to reach an distribution of the participating robots in the available area.
 
@@ -35,7 +35,8 @@ class DispersionPatternBT(py_trees.behaviour.Behaviour, MovementPattern):
 
     def __init__(self):
         """Initialize the dispersion pattern node."""
-        super().__init__('dispersion_pattern')
+        MovementPattern.__init__(self,'dispersion_pattern')
+        py_trees.behaviour.Behaviour.__init__(self,'dispersion_pattern')
         self.declare_parameters(
             namespace='',
             parameters=[
@@ -49,7 +50,6 @@ class DispersionPatternBT(py_trees.behaviour.Behaviour, MovementPattern):
                 ('max_translational_velocity', 0.0),
                 ('max_rotational_velocity', 0.0)
             ])
-        super(DispersionPatternBT, self).__init__('dispersion_pattern')
 
     def setup(self): 
         """Initialize the aggregation pattern node.""" 
@@ -96,7 +96,6 @@ class DispersionPatternBT(py_trees.behaviour.Behaviour, MovementPattern):
         self.direction_if_alone = Twist()
         self.direction_if_alone.linear.x = self.param_linear_if_alone
         self.direction_if_alone.angular.z = self.param_angular_if_alone
-        rclpy.init()
 
 
     def update(self):
@@ -105,11 +104,9 @@ class DispersionPatternBT(py_trees.behaviour.Behaviour, MovementPattern):
 
         self.logger.debug("  %s [Foo::update()]" % self.name)
 
-        rclpy.spin_once(DispersionPatternBT())
-
         self.feedback_message = "spin dispersion pattern once"
 
-        return py_trees.common.Status.SUCCESS
+        return py_trees.common.Status.RUNNING
 
     def terminate(self, new_status):
 
@@ -118,7 +115,6 @@ class DispersionPatternBT(py_trees.behaviour.Behaviour, MovementPattern):
         self.logger.debug("  %s [Foo::terminate().terminate()][%s->%s]" % (self.name, self.status, new_status))
         
         DispersionPatternBT.destroy_node()
-        rclpy.shutdown()
 
 
     def range_data_callback(self, incoming_msg):

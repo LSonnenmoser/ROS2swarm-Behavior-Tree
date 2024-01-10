@@ -26,7 +26,7 @@ from ros2swarm.utils.vote_list import VoteList
 from ros2swarm.voting_pattern.voting_pattern import VotingPattern
 
 
-class VoterModelPatternBT(py_trees.behaviour.Behaviour, VotingPattern):
+class VoterModelPatternBT(VotingPattern, py_trees.behaviour.Behaviour):
     """
     Implementation of the Voter Model.
 
@@ -38,7 +38,8 @@ class VoterModelPatternBT(py_trees.behaviour.Behaviour, VotingPattern):
 
     def __init__(self):
         """Initialize the voter model pattern node."""
-        super().__init__('voter_model_pattern')
+        VotingPattern.__init__(self,'voter_model_pattern')
+        py_trees.behaviour.Behaviour.__init__(self,'voter_model_pattern')
         self.declare_parameters(
             namespace='',
             parameters=[
@@ -49,7 +50,6 @@ class VoterModelPatternBT(py_trees.behaviour.Behaviour, VotingPattern):
                 ('voter_model_timer_period', 0.0),
             ])
         
-        super(VoterModelPatternBT, self).__init__('voter_model_pattern')
 
     def initialise(self):
         """Initialize the attraction pattern node."""
@@ -89,7 +89,6 @@ class VoterModelPatternBT(py_trees.behaviour.Behaviour, VotingPattern):
 
         self.first_broadcast_flag = False
 
-        rclpy.init()
 
 
     def setup(self): 
@@ -114,11 +113,10 @@ class VoterModelPatternBT(py_trees.behaviour.Behaviour, VotingPattern):
 
         self.logger.debug("  %s [Foo::update()]" % self.name)
 
-        rclpy.spin_once(VoterModelPatternBT())
 
         self.feedback_message = "spin drive pattern once"
 
-        return py_trees.common.Status.SUCCESS
+        return py_trees.common.Status.RUNNING
 
     def terminate(self, new_status):
 
@@ -127,7 +125,6 @@ class VoterModelPatternBT(py_trees.behaviour.Behaviour, VotingPattern):
         self.logger.debug("  %s [Foo::terminate().terminate()][%s->%s]" % (self.name, self.status, new_status))
         
         VoterModelPatternBT.destroy_node()
-        rclpy.shutdown()
 
 
     def timer_callback(self):

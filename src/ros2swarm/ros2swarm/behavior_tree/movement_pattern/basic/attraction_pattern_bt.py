@@ -12,29 +12,32 @@ from ros2swarm.utils.scan_calculation_functions import ScanCalculationFunctions
 
 
 
-class AttractionPatternBT(py_trees.behaviour.Behaviour, MovementPattern):
+class AttractionPatternBT(MovementPattern, py_trees.behaviour.Behaviour):
 
     def __init__(self):
 
         """Initialize the attraction pattern node."""
-        super().__init__('attraction_pattern')
-        # self.declare_parameters(
-        #     namespace='',
-        #     parameters=[
-        #         ('attraction_max_range', 0.0),
-        #         ('attraction_min_range', 0.0),
-        #         ('attraction_front_attraction', 0.0),
-        #         ('attraction_threshold', 0),
-        #         ('attraction_linear_if_alone', 0.0),
-        #         ('attraction_angular_if_alone', 0.0),
-        #         ('max_translational_velocity', 0.0),
-        #         ('max_rotational_velocity', 0.0)
-        #     ])
+        MovementPattern.__init__(self,'attraction_pattern')
+        py_trees.behaviour.Behaviour.__init__(self,'attraction_pattern')
+        self.declare_parameters(
+            namespace='',
+            parameters=[
+                ('attraction_max_range', 0.0),
+                ('attraction_min_range', 0.0),
+                ('attraction_front_attraction', 0.0),
+                ('attraction_threshold', 0),
+                ('attraction_linear_if_alone', 0.0),
+                ('attraction_angular_if_alone', 0.0),
+                ('max_translational_velocity', 0.0),
+                ('max_rotational_velocity', 0.0)
+            ])
+
+        print('finished')
 
 
 
 
-        super(AttractionPatternBT, self).__init__('attraction_pattern')
+
 
 
     def setup(self):
@@ -44,7 +47,7 @@ class AttractionPatternBT(py_trees.behaviour.Behaviour, MovementPattern):
 
         self.scan_subscription = self.create_subscription(
             RangeData,
-            self.get_namespace() + '/range_data',
+            self.get_namespace() + 'range_data',
             self.swarm_command_controlled(self.range_data_callback),
             qos_profile=qos_profile_sensor_data
         )
@@ -80,7 +83,7 @@ class AttractionPatternBT(py_trees.behaviour.Behaviour, MovementPattern):
         self.direction_if_alone.angular.z = self.param_angular_if_alone
 
 
-        rclpy.init()
+
 
     def update(self):
 
@@ -92,11 +95,9 @@ class AttractionPatternBT(py_trees.behaviour.Behaviour, MovementPattern):
 
         self.logger.debug("  %s [Foo::update()]" % self.name)
 
-        rclpy.spin_once(AttractionPatternBT())
-
         self.feedback_message = "spin attraction pattern once"
 
-        return py_trees.common.Status.SUCCESS
+        return py_trees.common.Status.RUNNING
 
 
 
@@ -113,7 +114,6 @@ class AttractionPatternBT(py_trees.behaviour.Behaviour, MovementPattern):
         self.logger.debug("  %s [Foo::terminate().terminate()][%s->%s]" % (self.name, self.status, new_status))
         
         AttractionPatternBT.destroy_node()
-        rclpy.shutdown()
 
 
     def range_data_callback(self, incoming_msg):

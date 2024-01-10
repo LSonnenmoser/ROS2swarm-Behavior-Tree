@@ -20,7 +20,7 @@ from ros2swarm.movement_pattern.movement_pattern import MovementPattern
 from communication_interfaces.msg import OpinionMessage, DoubleMessage
 
 
-class DiscussedDispersionBT(py_trees.behaviour.Behaviour, MovementPattern):
+class DiscussedDispersionBT(MovementPattern, py_trees.behaviour.Behaviour):
     """
     Pattern to perform a dispersion of the swarm based a common first to discuss distance value.
     Keep distance at 1,2, or 3 meters, depending on common opinion 1 to 3.
@@ -28,7 +28,8 @@ class DiscussedDispersionBT(py_trees.behaviour.Behaviour, MovementPattern):
 
     def __init__(self):
         """Initialize the discussed dispersion pattern node."""
-        super().__init__('discussed_dispersion_pattern')
+        MovementPattern.__init__(self,'discussed_dispersion_pattern')
+        py_trees.behaviour.Behaviour.__init__(self,'discussed_dispersion_pattern')
         self.declare_parameters(
             namespace='',
             parameters=[
@@ -44,7 +45,6 @@ class DiscussedDispersionBT(py_trees.behaviour.Behaviour, MovementPattern):
         self.opinion_latest = OpinionMessage()
         self.message = DoubleMessage()
 
-        super(DiscussedDispersionBT, self).__init__('discussed_dispersion_pattern')
 
     def setup(self): 
         """Initialize the aggregation pattern node.""" 
@@ -88,7 +88,6 @@ class DiscussedDispersionBT(py_trees.behaviour.Behaviour, MovementPattern):
                                        self.swarm_command_controlled_timer(self.discussed_dispersion_callback))
         self.switch = discussion_time / timer_period
 
-        rclpy.init()
 
 
     def update(self):
@@ -97,11 +96,9 @@ class DiscussedDispersionBT(py_trees.behaviour.Behaviour, MovementPattern):
 
         self.logger.debug("  %s [Foo::update()]" % self.name)
 
-        rclpy.spin_once(DiscussedDispersionBT())
-
         self.feedback_message = "spin drive pattern once"
 
-        return py_trees.common.Status.SUCCESS
+        return py_trees.common.Status.RUNNING
 
     def terminate(self, new_status):
 
@@ -110,7 +107,6 @@ class DiscussedDispersionBT(py_trees.behaviour.Behaviour, MovementPattern):
         self.logger.debug("  %s [Foo::terminate().terminate()][%s->%s]" % (self.name, self.status, new_status))
         
         DiscussedDispersionBT.destroy_node()
-        rclpy.shutdown()
 
     def command_callback_dispersion(self, incoming_msg: Twist):
         """Assign the message to variable"""

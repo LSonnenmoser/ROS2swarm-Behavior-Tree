@@ -11,14 +11,13 @@
 #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
-import rclpy
 import py_trees
 
 from geometry_msgs.msg import Twist
 from ros2swarm.movement_pattern.movement_pattern import MovementPattern
 
 
-class DrivePatternBT(py_trees.behaviour.Behaviour, MovementPattern):
+class DrivePatternBT(MovementPattern, py_trees.behaviour.Behaviour):
     """
     A simple pattern for driving a constant direction vector.
 
@@ -28,7 +27,8 @@ class DrivePatternBT(py_trees.behaviour.Behaviour, MovementPattern):
 
     def __init__(self):
         """Initialize the drive pattern."""
-        super().__init__('drive_pattern')
+        MovementPattern.__init__(self,'drive_pattern')
+        py_trees.behaviour.Behaviour.__init__(self,'drive_pattern')
 
         self.declare_parameters(
             namespace='',
@@ -37,7 +37,6 @@ class DrivePatternBT(py_trees.behaviour.Behaviour, MovementPattern):
                 ('drive_linear', 0.0),
                 ('drive_angular', 0.0),
             ])
-        super(DrivePatternBT, self).__init__('drive_pattern')
     
     def setup(self): 
         """Initialize the aggregation pattern node.""" 
@@ -59,7 +58,6 @@ class DrivePatternBT(py_trees.behaviour.Behaviour, MovementPattern):
         self.get_logger().warn('Logger is: ' + self.get_logger().get_effective_level().name)
         self.get_logger().info('Logger is: info ')
         self.get_logger().debug('Logger is: debug')
-        rclpy.init()
 
 
     def update(self):
@@ -68,11 +66,9 @@ class DrivePatternBT(py_trees.behaviour.Behaviour, MovementPattern):
 
         self.logger.debug("  %s [Foo::update()]" % self.name)
 
-        rclpy.spin_once(DrivePatternBT())
-
         self.feedback_message = "spin drive pattern once"
 
-        return py_trees.common.Status.SUCCESS
+        return py_trees.common.Status.RUNNING
 
     def terminate(self, new_status):
 
@@ -81,7 +77,6 @@ class DrivePatternBT(py_trees.behaviour.Behaviour, MovementPattern):
         self.logger.debug("  %s [Foo::terminate().terminate()][%s->%s]" % (self.name, self.status, new_status))
         
         DrivePatternBT.destroy_node()
-        rclpy.shutdown()
 
     
     def timer_callback(self):

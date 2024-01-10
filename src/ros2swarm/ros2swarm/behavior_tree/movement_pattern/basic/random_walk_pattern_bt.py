@@ -21,11 +21,12 @@ from ros2swarm.movement_pattern.movement_pattern import MovementPattern
 from ros2swarm.utils import setup_node
 
 
-class RandomWalkPatternBT(MovementPattern):
+class RandomWalkPatternBT(MovementPattern, py_trees.behaviour.Behaviour):
 
     def __init__(self):
         """Initialize the random walk pattern node."""
-        super().__init__('random_walk')
+        MovementPattern.__init__(self,'random_walk')
+        py_trees.behaviour.Behaviour.__init__(self,'random_walk')
         self.declare_parameters(
             namespace='',
             parameters=[
@@ -36,7 +37,6 @@ class RandomWalkPatternBT(MovementPattern):
                 ('random_walk_lin_interval_min', 0.0),
                 ('random_walk_lin_interval_max', 0.0)
             ])
-        super(RandomWalkPatternBT, self).__init__('random_walk')
 
     def setup(self): 
         """Initialize the aggregation pattern node.""" 
@@ -70,11 +70,10 @@ class RandomWalkPatternBT(MovementPattern):
 
         self.logger.debug("  %s [Foo::update()]" % self.name)
 
-        rclpy.spin_once(RandomWalkPatternBT())
 
         self.feedback_message = "spin minimalist flocking pattern once"
 
-        return py_trees.common.Status.SUCCESS
+        return py_trees.common.Status.RUNNING
 
     def terminate(self, new_status):
 
@@ -83,7 +82,6 @@ class RandomWalkPatternBT(MovementPattern):
         self.logger.debug("  %s [Foo::terminate().terminate()][%s->%s]" % (self.name, self.status, new_status))
         
         RandomWalkPatternBT.destroy_node()
-        rclpy.shutdown()
 
 
     def timer_callback(self):

@@ -27,7 +27,7 @@ from communication_interfaces.msg import OpinionMACMessage
 from ros2swarm.utils.wifi_functions import WifiFunctions
 
 
-class VoterModelWithLimiterPatternBT(VotingPattern):
+class VoterModelWithLimiterPatternBT(VotingPattern, py_trees.behaviour.Behaviour):
     """
     Implementation of the Voter Model using dBm strength of others as limiter.
 
@@ -40,7 +40,8 @@ class VoterModelWithLimiterPatternBT(VotingPattern):
 
     def __init__(self):
         """Initialize the voter model pattern node."""
-        super().__init__('voter_model_pattern')
+        VotingPattern.__init__(self,'voter_model_pattern')
+        py_trees.behaviour.Behaviour.__init__(self,'voter_model_pattern')
         self.declare_parameters(
             namespace='',
             parameters=[
@@ -54,8 +55,6 @@ class VoterModelWithLimiterPatternBT(VotingPattern):
                 ('voter_model_with_limiter_wifi_interface_name', ''),
             ])
         
-        super(VoterModelWithLimiterPatternBT, self).__init__('voter_model_pattern')
-
 
     def initialise(self):
         """Initialize the attraction pattern node."""
@@ -106,7 +105,6 @@ class VoterModelWithLimiterPatternBT(VotingPattern):
 
         self.first_broadcast_flag = False
 
-        rclpy.init()
 
 
     def setup(self): 
@@ -132,11 +130,9 @@ class VoterModelWithLimiterPatternBT(VotingPattern):
 
         self.logger.debug("  %s [Foo::update()]" % self.name)
 
-        rclpy.spin_once(VoterModelWithLimiterPatternBT())
-
         self.feedback_message = "spin drive pattern once"
 
-        return py_trees.common.Status.SUCCESS
+        return py_trees.common.Status.RUNNING
 
     def terminate(self, new_status):
 
@@ -145,7 +141,6 @@ class VoterModelWithLimiterPatternBT(VotingPattern):
         self.logger.debug("  %s [Foo::terminate().terminate()][%s->%s]" % (self.name, self.status, new_status))
         
         VoterModelWithLimiterPatternBT.destroy_node()
-        rclpy.shutdown()
 
     def timer_callback(self):
         """Select a new opinion of another entity and emit the own opinion."""
