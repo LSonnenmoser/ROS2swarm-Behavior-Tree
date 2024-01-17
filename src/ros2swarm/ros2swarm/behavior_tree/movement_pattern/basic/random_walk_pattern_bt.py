@@ -47,6 +47,8 @@ class RandomWalkPatternBT(MovementPattern, py_trees.behaviour.Behaviour):
         """Initialize the attraction pattern node."""
         self.logger.debug("  %s [Foo::initialise()]" % self.name)
 
+        
+
         self.walk = self.create_timer(5, self.swarm_command_controlled_timer(self.random))
         self.timer = self.create_timer(
             self.get_parameter("random_walk_timer_period").get_parameter_value().double_value,
@@ -62,7 +64,7 @@ class RandomWalkPatternBT(MovementPattern, py_trees.behaviour.Behaviour):
         self.i = 0
         self.turn = False
         self.current_msg = Twist()
-        rclpy.init()
+
 
     def update(self):
 
@@ -87,7 +89,7 @@ class RandomWalkPatternBT(MovementPattern, py_trees.behaviour.Behaviour):
     def timer_callback(self):
         """Publish the configured twist message when called."""
         self.command_publisher.publish(self.current_msg)
-        self.get_logger().debug('Publishing {}:"{}"'.format(self.i, self.current_msg))
+        self.get_logger().info('Publishing {}:"{}"'.format(self.i, self.current_msg))
         self.i += 1
 
     def random(self):

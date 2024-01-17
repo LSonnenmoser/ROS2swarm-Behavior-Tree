@@ -138,6 +138,8 @@ setup(
             # movement_pattern.combined
             'discussed_dispersion_pattern = '
             'ros2swarm.movement_pattern.combined.discussed_dispersion_pattern:main',
+            'behavior_tree_pattern = '
+            'ros2swarm.movement_pattern.combined.behavior_tree_pattern:main',
 
             # voting.basic
             'voter_model_pattern = '
