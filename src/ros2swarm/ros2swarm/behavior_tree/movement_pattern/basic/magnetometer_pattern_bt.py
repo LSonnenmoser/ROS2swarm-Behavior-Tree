@@ -58,18 +58,19 @@ class MagnetometerPatternBT(MovementPattern, py_trees.behaviour.Behaviour):
 
         self.logger.debug("  %s [Foo::setup()]" % self.name)
 
-        self.magnetometer_subscription = self.create_subscription(
-            MagneticField,
-            self.get_namespace() + '/magnetic_field',
-            self.swarm_command_controlled(self.magnetic_callback),
-            qos_profile=qos_profile_sensor_data
-        )
 
         self.test_output = self.create_publisher(Twist, self.get_namespace() + '/test_output', 10)
 
     def initialise(self):
         """Initialize the attraction pattern node."""
         self.logger.debug("  %s [Foo::initialise()]" % self.name)
+
+        self.magnetometer_subscription = self.create_subscription(
+            MagneticField,
+            self.get_namespace() + '/magnetic_field',
+            self.swarm_command_controlled(self.magnetic_callback),
+            qos_profile=qos_profile_sensor_data
+        )
 
         self.param_target_direction_x = float(
             self.get_parameter(
@@ -101,6 +102,7 @@ class MagnetometerPatternBT(MovementPattern, py_trees.behaviour.Behaviour):
 
         self.logger.debug("  %s [Foo::update()]" % self.name)
 
+        rclpy.spin_once(self)
 
         self.feedback_message = "spin magnetometer pattern once"
 
@@ -112,7 +114,7 @@ class MagnetometerPatternBT(MovementPattern, py_trees.behaviour.Behaviour):
 
         self.logger.debug("  %s [Foo::terminate().terminate()][%s->%s]" % (self.name, self.status, new_status))
         
-        MagnetometerPatternBT.destroy_node()
+        # MagnetometerPatternBT.destroy_node()
 
         
 

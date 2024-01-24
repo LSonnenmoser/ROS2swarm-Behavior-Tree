@@ -56,6 +56,11 @@ class DispersionPatternBT(MovementPattern, py_trees.behaviour.Behaviour):
 
         self.logger.debug("  %s [Foo::setup()]" % self.name)
 
+
+    def initialise(self):
+        """Initialize the attraction pattern node."""
+        self.logger.debug("  %s [Foo::initialise()]" % self.name)
+
         self.range_data_subscription = self.create_subscription(
             RangeData,
             self.get_namespace() + '/range_data',
@@ -69,10 +74,6 @@ class DispersionPatternBT(MovementPattern, py_trees.behaviour.Behaviour):
             self.max_range_callback,
             10
         )
-
-    def initialise(self):
-        """Initialize the attraction pattern node."""
-        self.logger.debug("  %s [Foo::initialise()]" % self.name)
 
         self.param_max_range = float(
             self.get_parameter("dispersion_max_range").get_parameter_value().double_value)
@@ -106,6 +107,8 @@ class DispersionPatternBT(MovementPattern, py_trees.behaviour.Behaviour):
 
         self.feedback_message = "spin dispersion pattern once"
 
+        rclpy.spin_once(self)
+
         return py_trees.common.Status.RUNNING
 
     def terminate(self, new_status):
@@ -114,7 +117,7 @@ class DispersionPatternBT(MovementPattern, py_trees.behaviour.Behaviour):
 
         self.logger.debug("  %s [Foo::terminate().terminate()][%s->%s]" % (self.name, self.status, new_status))
         
-        DispersionPatternBT.destroy_node()
+        # DispersionPatternBT.destroy_node()
 
 
     def range_data_callback(self, incoming_msg):

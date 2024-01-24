@@ -91,10 +91,16 @@ class RatSearchPatternBT(MovementPattern, py_trees.behaviour.Behaviour):
                 ('max_rotational_velocity', 0.0),
             ])
         
+
     def setup(self): 
         """Initialize the aggregation pattern node.""" 
 
         self.logger.debug("  %s [Foo::setup()]" % self.name)
+
+
+    def initialise(self):
+        """Initialize the attraction pattern node."""
+        self.logger.debug("  %s [Foo::initialise()]" % self.name)
 
         self.scan_subscription = self.create_subscription(
             LaserScan,
@@ -115,10 +121,6 @@ class RatSearchPatternBT(MovementPattern, py_trees.behaviour.Behaviour):
             self.get_namespace() + '/information',
             10
         )
-
-    def initialise(self):
-        """Initialize the attraction pattern node."""
-        self.logger.debug("  %s [Foo::initialise()]" % self.name)
 
         self.param_max_range = float(self.get_parameter(
             "rat_search_max_range").get_parameter_value().double_value)
@@ -176,6 +178,8 @@ class RatSearchPatternBT(MovementPattern, py_trees.behaviour.Behaviour):
 
         self.logger.debug("  %s [Foo::update()]" % self.name)
 
+        rclpy.spin_once(self)
+
         self.feedback_message = "spin minimalist flocking pattern once"
 
         return py_trees.common.Status.RUNNING
@@ -186,7 +190,7 @@ class RatSearchPatternBT(MovementPattern, py_trees.behaviour.Behaviour):
 
         self.logger.debug("  %s [Foo::terminate().terminate()][%s->%s]" % (self.name, self.status, new_status))
         
-        RatSearchPatternBT.destroy_node()
+        # RatSearchPatternBT.destroy_node()
 
 
     def get_direction_batch_average(self, target_direction):

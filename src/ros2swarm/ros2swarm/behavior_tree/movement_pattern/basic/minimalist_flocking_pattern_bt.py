@@ -85,6 +85,11 @@ class MinimalistFlockingPatternBT(MovementPattern, py_trees.behaviour.Behaviour)
 
         self.logger.debug("  %s [Foo::setup()]" % self.name)
 
+
+    def initialise(self):
+        """Initialize the attraction pattern node."""
+        self.logger.debug("  %s [Foo::initialise()]" % self.name)
+
         # sensor subscription
         self.range_data_subscription = self.create_subscription(
             RangeData,
@@ -92,10 +97,6 @@ class MinimalistFlockingPatternBT(MovementPattern, py_trees.behaviour.Behaviour)
             self.swarm_command_controlled(self.range_data_callback),
             qos_profile=qos_profile_sensor_data
         )
-
-    def initialise(self):
-        """Initialize the attraction pattern node."""
-        self.logger.debug("  %s [Foo::initialise()]" % self.name)
 
         # global parameters
         self.param_translational_velocity = self.get_parameter(
@@ -139,6 +140,8 @@ class MinimalistFlockingPatternBT(MovementPattern, py_trees.behaviour.Behaviour)
 
         self.logger.debug("  %s [Foo::update()]" % self.name)
 
+        rclpy.spin_once(self)
+
 
         self.feedback_message = "spin minimalist flocking pattern once"
 
@@ -150,7 +153,7 @@ class MinimalistFlockingPatternBT(MovementPattern, py_trees.behaviour.Behaviour)
 
         self.logger.debug("  %s [Foo::terminate().terminate()][%s->%s]" % (self.name, self.status, new_status))
         
-        MinimalistFlockingPatternBT.destroy_node()
+        # MinimalistFlockingPatternBT.destroy_node()
 
 
     def range_data_callback(self, incoming_msg):

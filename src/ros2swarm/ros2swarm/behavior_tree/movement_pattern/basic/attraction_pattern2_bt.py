@@ -51,11 +51,17 @@ class AttractionPattern2BT(MovementPattern, py_trees.behaviour.Behaviour):
                 ('max_translational_velocity', 0.0),
                 ('max_rotational_velocity', 0.0),
             ])
+        self.direction_if_alone = Twist()
+
 
     def setup(self): 
         """Initialize the aggregation pattern node.""" 
 
         self.logger.debug("  %s [Foo::setup()]" % self.name)
+
+    def initialise(self):
+        """Initialize the attraction pattern node."""
+        self.logger.debug("  %s [Foo::initialise()]" % self.name)
 
         self.scan_subscription = self.create_subscription(
             RangeData,
@@ -63,10 +69,6 @@ class AttractionPattern2BT(MovementPattern, py_trees.behaviour.Behaviour):
             self.swarm_command_controlled(self.range_data_callback),
             qos_profile=qos_profile_sensor_data
         )
-
-    def initialise(self):
-        """Initialize the attraction pattern node."""
-        self.logger.debug("  %s [Foo::initialise()]" % self.name)
 
         self.param_max_range = float(
             self.get_parameter("attraction2_max_range").get_parameter_value().double_value)
@@ -96,6 +98,8 @@ class AttractionPattern2BT(MovementPattern, py_trees.behaviour.Behaviour):
 
         self.logger.debug("  %s [Foo::update()]" % self.name)
 
+        rclpy.spin_once(self)
+
         self.feedback_message = "spin attraction pattern 2 once"
 
         return py_trees.common.Status.RUNNING
@@ -106,7 +110,7 @@ class AttractionPattern2BT(MovementPattern, py_trees.behaviour.Behaviour):
 
         self.logger.debug("  %s [Foo::terminate().terminate()][%s->%s]" % (self.name, self.status, new_status))
         
-        AttractionPattern2BT.destroy_node()
+        # AttractionPattern2BT.destroy_node()
 
 
     def range_data_callback(self, incoming_msg):

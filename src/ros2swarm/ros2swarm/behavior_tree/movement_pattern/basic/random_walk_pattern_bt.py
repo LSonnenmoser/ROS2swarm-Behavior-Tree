@@ -37,15 +37,19 @@ class RandomWalkPatternBT(MovementPattern, py_trees.behaviour.Behaviour):
                 ('random_walk_lin_interval_min', 0.0),
                 ('random_walk_lin_interval_max', 0.0)
             ])
+        self.i = 0
+        self.turn = False
+        self.current_msg = Twist()
+        
 
     def setup(self): 
         """Initialize the aggregation pattern node.""" 
 
-        self.logger.debug("  %s [Foo::setup()]" % self.name)
+        self.get_logger().info("  %s [RandomWalkPattern::setup()]" % self.name)
 
     def initialise(self):
         """Initialize the attraction pattern node."""
-        self.logger.debug("  %s [Foo::initialise()]" % self.name)
+        self.get_logger().info("  %s [RandomWalkPattern::initialise()]" % self.name)
 
         
 
@@ -65,15 +69,15 @@ class RandomWalkPatternBT(MovementPattern, py_trees.behaviour.Behaviour):
         self.turn = False
         self.current_msg = Twist()
 
-
     def update(self):
 
         """ spin node once """
 
-        self.logger.debug("  %s [Foo::update()]" % self.name)
+        self.get_logger().info("  %s [RandomWalkPattern::update()]" % self.name)
 
+        rclpy.spin_once(self)
 
-        self.feedback_message = "spin minimalist flocking pattern once"
+        self.feedback_message = "spin random walk pattern once"
 
         return py_trees.common.Status.RUNNING
 
@@ -81,7 +85,7 @@ class RandomWalkPatternBT(MovementPattern, py_trees.behaviour.Behaviour):
 
         """ destroy node """
 
-        self.logger.debug("  %s [Foo::terminate().terminate()][%s->%s]" % (self.name, self.status, new_status))
+        self.logger.debug("  %s [RandomWalkPattern::terminate().terminate()][%s->%s]" % (self.name, self.status, new_status))
         
         RandomWalkPatternBT.destroy_node()
 

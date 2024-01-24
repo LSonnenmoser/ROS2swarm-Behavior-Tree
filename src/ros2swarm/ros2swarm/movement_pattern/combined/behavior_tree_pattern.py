@@ -19,11 +19,19 @@ import time
 from rclpy.node import Node
 
 from ros2swarm.movement_pattern.movement_pattern import MovementPattern
-from ros2swarm.behavior_tree.movement_pattern.basic.random_walk_pattern_bt import RandomWalkPatternBT
 from ros2swarm.utils import setup_node
 from communication_interfaces.msg import Int8Message
 from ros2swarm.utils.swarm_controll import SwarmState
 
+from ros2swarm.behavior_tree.movement_pattern.basic.aggregation_pattern_bt import AggregationPatternBT
+from ros2swarm.behavior_tree.movement_pattern.basic.attraction_pattern_bt import AttractionPatternBT
+from ros2swarm.behavior_tree.movement_pattern.basic.attraction_pattern2_bt import AttractionPattern2BT
+from ros2swarm.behavior_tree.movement_pattern.basic.dispersion_pattern_bt import DispersionPatternBT
+from ros2swarm.behavior_tree.movement_pattern.basic.drive_pattern_bt import DrivePatternBT
+from ros2swarm.behavior_tree.movement_pattern.basic.magnetometer_pattern_bt import MagnetometerPatternBT
+from ros2swarm.behavior_tree.movement_pattern.basic.minimalist_flocking_pattern_bt import MinimalistFlockingPatternBT
+from ros2swarm.behavior_tree.movement_pattern.basic.random_walk_pattern_bt import RandomWalkPatternBT
+from ros2swarm.behavior_tree.movement_pattern.basic.rat_search_pattern_bt import RatSearchPatternBT
 
 
 
@@ -43,18 +51,13 @@ class BehaviorTreePattern(Node):
         self.get_logger().info('Publishing : Init.')
         self.start_flag = False
 
+        self.formBehaviorTree()
 
-        self.root = py_trees.composites.Sequence("root", False)
-        action = RandomWalkPatternBT()
-        self.root.add_child(action)
-
-        self.get_logger().info('Publishing : Setup.')
-
-        action.setup()
+        
         self.current_msg = Twist()
         self.i = 0
 
-        self.timer= self.create_timer(5, self.timer_callback)
+        self.timer= self.create_timer(0.001, self.timer_callback)
 
         self.swarm_command_subscription = \
             self.create_subscription(Int8Message, '/swarm_command',
@@ -87,6 +90,38 @@ class BehaviorTreePattern(Node):
             self.start_flag = True
         if msg.data == int(SwarmState.STOP):
             self.start_flag = False
+
+
+    def formBehaviorTree(self):
+        """ Create and setup the behavior tree
+        BT nodes:
+            py_trees.composites.Sequence(name, memory)
+            py_trees.composites.Selector(name, memory)
+            py.trees.composites.Parallel(name, policy)
+            RandomwalkPatternBT()
+        """
+        patterns=[AttractionPatternBT(),
+                  AggregationPatternBT(),  
+                  AttractionPattern2BT(), 
+                  DispersionPatternBT(), 
+                  DrivePatternBT(), 
+                  MagnetometerPatternBT(), 
+                  MinimalistFlockingPatternBT(),
+                  RandomWalkPatternBT(), 
+                #   RatSearchPatternBT()
+                  ]
+        action2 = RandomWalkPatternBT()
+        action3 = AggregationPatternBT()
+        action = DrivePatternBT()
+        action1 = DrivePatternBT()
+        # self.root.add_child(action)
+        self.root = py_trees.composites.Sequence("root", False, patterns)
+        # self.root.add_child(action3)
+
+        self.get_logger().info('Publishing : Setup.')
+
+        for pattern in patterns:
+            pattern.setup()
 
 def main(args=None):
     """Create a node for the attraction pattern, spins it and handles the destruction."""

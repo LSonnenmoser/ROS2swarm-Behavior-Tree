@@ -27,7 +27,7 @@ class MovementPattern(AbstractPattern):
         """
         super().__init__(node_name)
         self.command_publisher = self.create_publisher(Twist,
-                                                       self.get_namespace() + 'drive_command', 10)
+                                                       self.get_namespace() + '/drive_command', 10)
 
     def swarm_command_false_case(self):
         """If swarm command is false the robot should not move."""

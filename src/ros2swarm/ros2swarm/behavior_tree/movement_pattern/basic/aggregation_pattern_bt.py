@@ -58,16 +58,22 @@ class AggregationPatternBT(MovementPattern, py_trees.behaviour.Behaviour):
                 ('max_rotational_velocity', 0.0)
             ])
         
-
-    def setup(self): 
-        """Initialize the aggregation pattern node.""" 
-
-        self.logger.debug("  %s [Foo::setup()]" % self.name)
-
         self.state = State.INIT
         self.stay_counter_needs_init = True
         self.stay_counter = 0
         self.num_robots = 0
+        
+
+    def setup(self): 
+        """Initialize the aggregation pattern node.""" 
+
+        self.logger.debug("  %s [AggregationPatternBT::setup()]" % self.name)
+
+    def initialise(self):
+
+
+        """Initialize the attraction pattern node."""
+        self.get_logger().info("  %s [AggregationPatternBT::initialise()]" % self.name)
 
         self.range_data_subscription = self.create_subscription(
             RangeData,
@@ -75,11 +81,6 @@ class AggregationPatternBT(MovementPattern, py_trees.behaviour.Behaviour):
             self.swarm_command_controlled(self.range_data_callback),
             qos_profile=qos_profile_sensor_data
         )
-
-    def initialise(self):
-
-        """Initialize the attraction pattern node."""
-        self.logger.debug("  %s [Foo::initialise()]" % self.name)
 
         self.param_max_range = float(
             self.get_parameter("aggregation_max_range").get_parameter_value().double_value)
@@ -115,7 +116,9 @@ class AggregationPatternBT(MovementPattern, py_trees.behaviour.Behaviour):
 
         """ spin node once """
 
-        self.logger.debug("  %s [Foo::update()]" % self.name)
+        self.get_logger().info("  %s [AggregationPatternBT::update()]" % self.name)
+
+        rclpy.spin_once(self)
 
 
         self.feedback_message = "spin aggregation pattern once"
@@ -127,9 +130,9 @@ class AggregationPatternBT(MovementPattern, py_trees.behaviour.Behaviour):
 
         """ destroy node """
 
-        self.logger.debug("  %s [Foo::terminate().terminate()][%s->%s]" % (self.name, self.status, new_status))
+        self.logger.debug("  %s [AggregationPatternBT::terminate().terminate()][%s->%s]" % (self.name, self.status, new_status))
         
-        AggregationPatternBT.destroy_node()
+        # AggregationPatternBT.destroy_node()
 
 
 
@@ -140,6 +143,7 @@ class AggregationPatternBT(MovementPattern, py_trees.behaviour.Behaviour):
         """Call back if a new scan msg is available."""
         direction = self.vector_calc(incoming_msg)
         self.command_publisher.publish(direction)
+        self.get_logger.info('Publishing:"{}"'.format(direction))
 
     def identify_robots(self, msg):
         """Identifies if a scan contains robots, based on the settings in the pattern parameters.
@@ -260,7 +264,7 @@ class AggregationPatternBT(MovementPattern, py_trees.behaviour.Behaviour):
         if current_range is None:
             return Twist()
 
-        self.get_logger().debug('Robot "{}" is in state "{}"'.format(self.get_namespace(), self.state))
+        self.get_logger().info('Robot "{}" is in state "{}"'.format(self.get_namespace(), self.state))
         result = Twist()
 
         if self.state is State.INIT:
@@ -277,6 +281,8 @@ class AggregationPatternBT(MovementPattern, py_trees.behaviour.Behaviour):
             result, self.state = self.stay_in_group(current_range)
         elif self.state is State.LEAVE_GROUP:
             result, self.state = self.leave_group(current_range)
+
+        self.get_logger().info("  %s [AggregationPatternBT::update()] %s %s" % self.name, result, self.state)
 
         return result
 

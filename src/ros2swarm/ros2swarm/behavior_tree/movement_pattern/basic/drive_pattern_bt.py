@@ -12,6 +12,8 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 import py_trees
+import rclpy
+
 
 from geometry_msgs.msg import Twist
 from ros2swarm.movement_pattern.movement_pattern import MovementPattern
@@ -27,8 +29,9 @@ class DrivePatternBT(MovementPattern, py_trees.behaviour.Behaviour):
 
     def __init__(self):
         """Initialize the drive pattern."""
-        MovementPattern.__init__(self,'drive_pattern')
         py_trees.behaviour.Behaviour.__init__(self,'drive_pattern')
+        MovementPattern.__init__(self,'drive_pattern')
+
 
         self.declare_parameters(
             namespace='',
@@ -41,12 +44,12 @@ class DrivePatternBT(MovementPattern, py_trees.behaviour.Behaviour):
     def setup(self): 
         """Initialize the aggregation pattern node.""" 
 
-        self.logger.debug("  %s [Foo::setup()]" % self.name)
+        self.logger.debug("  %s [DrivePatternBT::setup()]" % self.name)
 
     def initialise(self):
         """Initialize the attraction pattern node."""
-        self.logger.debug("  %s [Foo::initialise()]" % self.name)
 
+        self.get_logger().info("  %s [DrivePatternBT::initialise()]" % self.name)
         timer_period = float(
             self.get_parameter("drive_timer_period").get_parameter_value().double_value)
         self.timer = self.create_timer(timer_period, self.swarm_command_controlled_timer(self.timer_callback))
@@ -64,9 +67,10 @@ class DrivePatternBT(MovementPattern, py_trees.behaviour.Behaviour):
 
         """ spin node once """
 
-        self.logger.debug("  %s [Foo::update()]" % self.name)
+        self.get_logger().info("  %s [DrivePatternBT::update()]" % self.name)
 
         self.feedback_message = "spin drive pattern once"
+        rclpy.spin_once(self)
 
         return py_trees.common.Status.RUNNING
 
@@ -74,9 +78,9 @@ class DrivePatternBT(MovementPattern, py_trees.behaviour.Behaviour):
 
         """ destroy node """
 
-        self.logger.debug("  %s [Foo::terminate().terminate()][%s->%s]" % (self.name, self.status, new_status))
+        self.get_logger().info("  %s [DrivePatternBT::terminate().terminate()][%s->%s]" % (self.name, self.status, new_status))
         
-        DrivePatternBT.destroy_node()
+        # MovementPattern.destroy_node(self)
 
     
     def timer_callback(self):
@@ -91,7 +95,7 @@ class DrivePatternBT(MovementPattern, py_trees.behaviour.Behaviour):
         msg.linear.x = self.param_x
         msg.angular.z = self.param_z
         self.command_publisher.publish(msg)
-        self.get_logger().debug('Publishing {}:"{}"'.format(self.i, msg))
+        self.get_logger().info('Publishing {}:"{}"'.format(self.i, msg))
         self.i += 1
 
 
