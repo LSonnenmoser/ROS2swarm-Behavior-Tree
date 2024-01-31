@@ -67,13 +67,13 @@ class AggregationPatternBT(MovementPattern, py_trees.behaviour.Behaviour):
     def setup(self): 
         """Initialize the aggregation pattern node.""" 
 
-        self.logger.debug("  %s [AggregationPatternBT::setup()]" % self.name)
+        self.get_logger().debug("  %s [AggregationPatternBT::setup()]" % self.name)
 
     def initialise(self):
 
 
         """Initialize the attraction pattern node."""
-        self.get_logger().info("  %s [AggregationPatternBT::initialise()]" % self.name)
+        self.get_logger().debug("  %s [AggregationPatternBT::initialise()]" % self.name)
 
         self.range_data_subscription = self.create_subscription(
             RangeData,
@@ -116,9 +116,9 @@ class AggregationPatternBT(MovementPattern, py_trees.behaviour.Behaviour):
 
         """ spin node once """
 
-        self.get_logger().info("  %s [AggregationPatternBT::update()]" % self.name)
+        self.get_logger().debug("  %s [AggregationPatternBT::update()]" % self.name)
 
-        rclpy.spin_once(self)
+        rclpy.spin_once(self, timeout_sec=0)
 
 
         self.feedback_message = "spin aggregation pattern once"
@@ -130,7 +130,7 @@ class AggregationPatternBT(MovementPattern, py_trees.behaviour.Behaviour):
 
         """ destroy node """
 
-        self.logger.debug("  %s [AggregationPatternBT::terminate().terminate()][%s->%s]" % (self.name, self.status, new_status))
+        self.get_logger().debug("  %s [AggregationPatternBT::terminate().terminate()][%s->%s]" % (self.name, self.status, new_status))
         
         # AggregationPatternBT.destroy_node()
 
@@ -282,7 +282,6 @@ class AggregationPatternBT(MovementPattern, py_trees.behaviour.Behaviour):
         elif self.state is State.LEAVE_GROUP:
             result, self.state = self.leave_group(current_range)
 
-        self.get_logger().info("  %s [AggregationPatternBT::update()] %s %s" % self.name, result, self.state)
 
         return result
 

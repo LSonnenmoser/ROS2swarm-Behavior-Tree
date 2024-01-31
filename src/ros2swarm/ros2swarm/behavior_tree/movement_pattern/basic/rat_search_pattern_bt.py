@@ -95,12 +95,12 @@ class RatSearchPatternBT(MovementPattern, py_trees.behaviour.Behaviour):
     def setup(self): 
         """Initialize the aggregation pattern node.""" 
 
-        self.logger.debug("  %s [Foo::setup()]" % self.name)
+        self.get_logger().debug("  %s [RatSearch::setup()]" % self.name)
 
 
     def initialise(self):
         """Initialize the attraction pattern node."""
-        self.logger.debug("  %s [Foo::initialise()]" % self.name)
+        self.get_logger().debug("  %s [RatSearch::initialise()]" % self.name)
 
         self.scan_subscription = self.create_subscription(
             LaserScan,
@@ -141,11 +141,11 @@ class RatSearchPatternBT(MovementPattern, py_trees.behaviour.Behaviour):
             "rat_search_distance_buffer").get_parameter_value().double_value
 
         self.param_wall_right_degree = self.get_parameter(
-            "rat_search_wall_right_degree").get_parameter_value().integer_value
+            "rat_search_wall_right_degree").get_parameter_value().double_value
         self.param_wall_degree = self.get_parameter(
-            "rat_search_wall_degree").get_parameter_value().integer_value
+            "rat_search_wall_degree").get_parameter_value().double_value
         self.param_wall_batch_size = self.get_parameter(
-            "rat_search_wall_batch_size").get_parameter_value().integer_value
+            "rat_search_wall_batch_size").get_parameter_value().double_value
 
         self.param_max_translational_velocity = self.get_parameter(
             "max_translational_velocity").get_parameter_value().double_value
@@ -176,11 +176,11 @@ class RatSearchPatternBT(MovementPattern, py_trees.behaviour.Behaviour):
 
         """ spin node once """
 
-        self.logger.debug("  %s [Foo::update()]" % self.name)
+        self.get_logger().debug("  %s [RatSearch::update()]" % self.name)
 
         rclpy.spin_once(self)
 
-        self.feedback_message = "spin minimalist flocking pattern once"
+        self.feedback_message = "spin rat search pattern once"
 
         return py_trees.common.Status.RUNNING
 
@@ -188,7 +188,7 @@ class RatSearchPatternBT(MovementPattern, py_trees.behaviour.Behaviour):
 
         """ destroy node """
 
-        self.logger.debug("  %s [Foo::terminate().terminate()][%s->%s]" % (self.name, self.status, new_status))
+        self.get_logger().debug("  %s [RatSearch::terminate().terminate()][%s->%s]" % (self.name, self.status, new_status))
         
         # RatSearchPatternBT.destroy_node()
 

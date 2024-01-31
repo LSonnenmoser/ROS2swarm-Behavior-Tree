@@ -56,14 +56,14 @@ class MagnetometerPatternBT(MovementPattern, py_trees.behaviour.Behaviour):
     def setup(self): 
         """Initialize the aggregation pattern node.""" 
 
-        self.logger.debug("  %s [Foo::setup()]" % self.name)
+        self.get_logger().debug("  %s [Magnetometerpattern::setup()]" % self.name)
 
 
         self.test_output = self.create_publisher(Twist, self.get_namespace() + '/test_output', 10)
 
     def initialise(self):
         """Initialize the attraction pattern node."""
-        self.logger.debug("  %s [Foo::initialise()]" % self.name)
+        self.get_logger().debug("  %s [Magnetometerpattern::initialise()]" % self.name)
 
         self.magnetometer_subscription = self.create_subscription(
             MagneticField,
@@ -100,9 +100,9 @@ class MagnetometerPatternBT(MovementPattern, py_trees.behaviour.Behaviour):
 
         """ spin node once """
 
-        self.logger.debug("  %s [Foo::update()]" % self.name)
+        self.get_logger().debug("  %s [Magnetometerpattern::update()]" % self.name)
 
-        rclpy.spin_once(self)
+        rclpy.spin_once(self, timeout_sec=1)
 
         self.feedback_message = "spin magnetometer pattern once"
 
@@ -112,7 +112,7 @@ class MagnetometerPatternBT(MovementPattern, py_trees.behaviour.Behaviour):
 
         """ destroy node """
 
-        self.logger.debug("  %s [Foo::terminate().terminate()][%s->%s]" % (self.name, self.status, new_status))
+        self.get_logger().debug("  %s [Magnetometerpattern::terminate().terminate()][%s->%s]" % (self.name, self.status, new_status))
         
         # MagnetometerPatternBT.destroy_node()
 
@@ -122,12 +122,7 @@ class MagnetometerPatternBT(MovementPattern, py_trees.behaviour.Behaviour):
         """Call back if a new magnetometer msg is available."""
         # command to publish magnetometer message in terminal manually
         # ros2 topic pub --once /robot_namespace_0/magnetic_field sensor_msgs/msg/MagneticField
-        # "{
-        # header: {stamp: {sec: 1600091285, nanosec: 569285985}, frame_id: imu_link},
-        # magnetic_field:
-        # {x: -3.5999998999614036e-06, y: 0.0004931999719701707, z: -2.6399999114801176e-05},
-        # magnetic_field_covariance: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
-        #  }"
+        # "{ header: {stamp: {sec: 1600091285, nanosec: 569285985}, frame_id: imu_link}, magnetic_field: {x: -3.5999998999614036e-06, y: 0.0004931999719701707, z: -2.6399999114801176e-05}, magnetic_field_covariance: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0] }"
 
         direction = self.vector_calc(magnetometer_msg)
         self.command_publisher.publish(direction)

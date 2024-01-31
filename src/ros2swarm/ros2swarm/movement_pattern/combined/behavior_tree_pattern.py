@@ -100,22 +100,23 @@ class BehaviorTreePattern(Node):
             py.trees.composites.Parallel(name, policy)
             RandomwalkPatternBT()
         """
-        patterns=[AttractionPatternBT(),
+        patterns=[
+                  RatSearchPatternBT(),
+                  DrivePatternBT(), 
+                  RandomWalkPatternBT(), 
+                  MagnetometerPatternBT(), 
+                  AttractionPatternBT(),
                   AggregationPatternBT(),  
                   AttractionPattern2BT(), 
                   DispersionPatternBT(), 
-                  DrivePatternBT(), 
-                  MagnetometerPatternBT(), 
                   MinimalistFlockingPatternBT(),
-                  RandomWalkPatternBT(), 
-                #   RatSearchPatternBT()
                   ]
         action2 = RandomWalkPatternBT()
         action3 = AggregationPatternBT()
         action = DrivePatternBT()
         action1 = DrivePatternBT()
         # self.root.add_child(action)
-        self.root = py_trees.composites.Sequence("root", False, patterns)
+        self.root = py_trees.composites.Parallel("root", children=patterns, policy=py_trees.common.ParallelPolicy.SuccessOnAll(synchronise=True))
         # self.root.add_child(action3)
 
         self.get_logger().info('Publishing : Setup.')

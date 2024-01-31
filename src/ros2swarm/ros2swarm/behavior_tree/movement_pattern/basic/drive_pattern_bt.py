@@ -49,7 +49,7 @@ class DrivePatternBT(MovementPattern, py_trees.behaviour.Behaviour):
     def initialise(self):
         """Initialize the attraction pattern node."""
 
-        self.get_logger().info("  %s [DrivePatternBT::initialise()]" % self.name)
+        self.get_logger().debug("  %s [DrivePatternBT::initialise()]" % self.name)
         timer_period = float(
             self.get_parameter("drive_timer_period").get_parameter_value().double_value)
         self.timer = self.create_timer(timer_period, self.swarm_command_controlled_timer(self.timer_callback))
@@ -67,10 +67,10 @@ class DrivePatternBT(MovementPattern, py_trees.behaviour.Behaviour):
 
         """ spin node once """
 
-        self.get_logger().info("  %s [DrivePatternBT::update()]" % self.name)
+        self.get_logger().debug("  %s [DrivePatternBT::update()]" % self.name)
 
         self.feedback_message = "spin drive pattern once"
-        rclpy.spin_once(self)
+        rclpy.spin_once(self, timeout_sec=0)
 
         return py_trees.common.Status.RUNNING
 
@@ -78,7 +78,7 @@ class DrivePatternBT(MovementPattern, py_trees.behaviour.Behaviour):
 
         """ destroy node """
 
-        self.get_logger().info("  %s [DrivePatternBT::terminate().terminate()][%s->%s]" % (self.name, self.status, new_status))
+        self.get_logger().debug("  %s [DrivePatternBT::terminate().terminate()][%s->%s]" % (self.name, self.status, new_status))
         
         # MovementPattern.destroy_node(self)
 

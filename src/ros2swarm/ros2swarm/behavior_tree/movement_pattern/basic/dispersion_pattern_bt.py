@@ -54,12 +54,12 @@ class DispersionPatternBT(MovementPattern, py_trees.behaviour.Behaviour):
     def setup(self): 
         """Initialize the aggregation pattern node.""" 
 
-        self.logger.debug("  %s [Foo::setup()]" % self.name)
+        self.get_logger().debug("  %s [Dispersion::setup()]" % self.name)
 
 
     def initialise(self):
         """Initialize the attraction pattern node."""
-        self.logger.debug("  %s [Foo::initialise()]" % self.name)
+        self.get_logger().debug("  %s [Dispersion::initialise()]" % self.name)
 
         self.range_data_subscription = self.create_subscription(
             RangeData,
@@ -103,11 +103,11 @@ class DispersionPatternBT(MovementPattern, py_trees.behaviour.Behaviour):
 
         """ spin node once """
 
-        self.logger.debug("  %s [Foo::update()]" % self.name)
+        self.get_logger().debug("  %s [Dispersion::update()]" % self.name)
 
         self.feedback_message = "spin dispersion pattern once"
 
-        rclpy.spin_once(self)
+        rclpy.spin_once(self, timeout_sec=0)
 
         return py_trees.common.Status.RUNNING
 
@@ -115,7 +115,7 @@ class DispersionPatternBT(MovementPattern, py_trees.behaviour.Behaviour):
 
         """ destroy node """
 
-        self.logger.debug("  %s [Foo::terminate().terminate()][%s->%s]" % (self.name, self.status, new_status))
+        self.get_logger().debug("  %s [Dispersion::terminate().terminate()][%s->%s]" % (self.name, self.status, new_status))
         
         # DispersionPatternBT.destroy_node()
 

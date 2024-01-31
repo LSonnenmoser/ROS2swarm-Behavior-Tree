@@ -45,11 +45,11 @@ class RandomWalkPatternBT(MovementPattern, py_trees.behaviour.Behaviour):
     def setup(self): 
         """Initialize the aggregation pattern node.""" 
 
-        self.get_logger().info("  %s [RandomWalkPattern::setup()]" % self.name)
+        self.get_logger().debug("  %s [RandomWalkPattern::setup()]" % self.name)
 
     def initialise(self):
         """Initialize the attraction pattern node."""
-        self.get_logger().info("  %s [RandomWalkPattern::initialise()]" % self.name)
+        self.get_logger().debug("  %s [RandomWalkPattern::initialise()]" % self.name)
 
         
 
@@ -65,7 +65,6 @@ class RandomWalkPatternBT(MovementPattern, py_trees.behaviour.Behaviour):
                                       .get_parameter_value().double_value)
         self.lin_interval_max = float(self.get_parameter("random_walk_lin_interval_max")
                                       .get_parameter_value().double_value)
-        self.i = 0
         self.turn = False
         self.current_msg = Twist()
 
@@ -73,11 +72,12 @@ class RandomWalkPatternBT(MovementPattern, py_trees.behaviour.Behaviour):
 
         """ spin node once """
 
-        self.get_logger().info("  %s [RandomWalkPattern::update()]" % self.name)
+        self.get_logger().debug("  %s [RandomWalkPattern::update()]" % self.name)
 
-        rclpy.spin_once(self)
+        rclpy.spin_once(self, timeout_sec=0)
 
         self.feedback_message = "spin random walk pattern once"
+
 
         return py_trees.common.Status.RUNNING
 
@@ -85,9 +85,9 @@ class RandomWalkPatternBT(MovementPattern, py_trees.behaviour.Behaviour):
 
         """ destroy node """
 
-        self.logger.debug("  %s [RandomWalkPattern::terminate().terminate()][%s->%s]" % (self.name, self.status, new_status))
+        self.get_logger().debug("  %s [RandomWalkPattern::terminate().terminate()][%s->%s]" % (self.name, self.status, new_status))
         
-        RandomWalkPatternBT.destroy_node()
+        # MovementPattern.destroy_node(self)
 
 
     def timer_callback(self):

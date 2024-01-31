@@ -83,12 +83,12 @@ class MinimalistFlockingPatternBT(MovementPattern, py_trees.behaviour.Behaviour)
     def setup(self): 
         """Initialize the aggregation pattern node.""" 
 
-        self.logger.debug("  %s [Foo::setup()]" % self.name)
+        self.get_logger().debug("  %s [MinimalistFlocking::setup()]" % self.name)
 
 
     def initialise(self):
         """Initialize the attraction pattern node."""
-        self.logger.debug("  %s [Foo::initialise()]" % self.name)
+        self.get_logger().debug("  %s [MinimalistFlocking::initialise()]" % self.name)
 
         # sensor subscription
         self.range_data_subscription = self.create_subscription(
@@ -138,9 +138,9 @@ class MinimalistFlockingPatternBT(MovementPattern, py_trees.behaviour.Behaviour)
 
         """ spin node once """
 
-        self.logger.debug("  %s [Foo::update()]" % self.name)
+        self.get_logger().debug("  %s [MinimalistFlocking::update()]" % self.name)
 
-        rclpy.spin_once(self)
+        rclpy.spin_once(self, timeout_sec=0)
 
 
         self.feedback_message = "spin minimalist flocking pattern once"
@@ -151,7 +151,7 @@ class MinimalistFlockingPatternBT(MovementPattern, py_trees.behaviour.Behaviour)
 
         """ destroy node """
 
-        self.logger.debug("  %s [Foo::terminate().terminate()][%s->%s]" % (self.name, self.status, new_status))
+        self.get_logger().debug("  %s [MinimalistFlocking::terminate().terminate()][%s->%s]" % (self.name, self.status, new_status))
         
         # MinimalistFlockingPatternBT.destroy_node()
 

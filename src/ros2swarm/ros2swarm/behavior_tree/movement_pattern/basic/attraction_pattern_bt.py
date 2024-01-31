@@ -42,7 +42,7 @@ class AttractionPatternBT(MovementPattern, py_trees.behaviour.Behaviour):
 
     def setup(self):
         """Initialize the attraction pattern node."""
-        self.logger.debug("  %s [Foo::setup()]" % self.name)
+        self.get_logger().debug("  %s [Attraction::setup()]" % self.name)
 
 
 
@@ -53,7 +53,7 @@ class AttractionPatternBT(MovementPattern, py_trees.behaviour.Behaviour):
     def initialise(self):
 
         """Initialize the attraction pattern node."""
-        self.logger.debug("  %s [Foo::initialise()]" % self.name)
+        self.get_logger().debug("  %s [Attraction::initialise()]" % self.name)
         
         self.scan_subscription = self.create_subscription(
             RangeData,
@@ -94,10 +94,10 @@ class AttractionPatternBT(MovementPattern, py_trees.behaviour.Behaviour):
 
         """
 
-        self.logger.debug("  %s [Foo::update()]" % self.name)
+        self.get_logger().debug("  %s [Attraction::update()]" % self.name)
 
         self.feedback_message = "spin attraction pattern once"
-        rclpy.spin_once(self)
+        rclpy.spin_once(self, timeout_sec=0)
 
         return py_trees.common.Status.RUNNING
 
@@ -113,7 +113,7 @@ class AttractionPatternBT(MovementPattern, py_trees.behaviour.Behaviour):
 
         """
 
-        self.logger.debug("  %s [Foo::terminate().terminate()][%s->%s]" % (self.name, self.status, new_status))
+        self.get_logger().debug("  %s [Attraction::terminate().terminate()][%s->%s]" % (self.name, self.status, new_status))
         
         # AttractionPatternBT.destroy_node()
 

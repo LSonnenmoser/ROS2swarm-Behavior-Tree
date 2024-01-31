@@ -81,9 +81,9 @@
     rat_search_right_distance: 0.54 #0.48
     rat_search_left_distance: 1.5
     rat_search_distance_buffer: 0.125 # 12.5cm
-    rat_search_wall_right_degree: 270
-    rat_search_wall_degree: 100 # 100
-    rat_search_wall_batch_size: 2
+    rat_search_wall_right_degree: 270.0
+    rat_search_wall_degree: 100.0 # 100
+    rat_search_wall_batch_size: 2.0
 
     #dispersion_max_range: 3.5 # 1.2 on turtle,  # max range: 3500mm
     #dispersion_min_range: 0.12                  # min range: 120mm

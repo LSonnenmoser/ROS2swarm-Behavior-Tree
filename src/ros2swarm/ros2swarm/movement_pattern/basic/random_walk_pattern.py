@@ -24,7 +24,7 @@ class RandomWalkPattern(MovementPattern):
     def __init__(self):
         """Initialize the random walk pattern node."""
         super().__init__('random_walk')
-        self.get_logger().info('Publishing : Init.')
+        self.get_logger().debug('Publishing : Init.')
 
         self.declare_parameters(
             namespace='',
