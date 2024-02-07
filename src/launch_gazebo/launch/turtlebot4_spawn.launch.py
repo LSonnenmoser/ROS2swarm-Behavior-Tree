@@ -16,6 +16,7 @@
 
 
 import os
+import pathlib
 from ament_index_python.packages import get_package_share_directory
 
 from irobot_create_common_bringup.namespace import GetNamespacedName
@@ -76,11 +77,11 @@ def generate_launch_description():
 
     # Paths
     turtlebot4_ros_ign_bridge_launch = PathJoinSubstitution(
-        [pkg_turtlebot4_ignition_bringup, 'launch', 'ros_ign_bridge.launch.py'])
+        [str(pathlib.Path(__file__).parent.resolve()), 'ros_ign_bridge.launch.py'])
     rviz_launch = PathJoinSubstitution(
         [pkg_turtlebot4_viz, 'launch', 'view_robot.launch.py'])
     turtlebot4_node_launch = PathJoinSubstitution(
-        [pkg_turtlebot4_ignition_bringup, 'launch', 'turtlebot4_nodes.launch.py'])
+        [str(pathlib.Path(__file__).parent.resolve()), 'turtlebot4_nodes.launch.py'])
     create3_nodes_launch = PathJoinSubstitution(
         [pkg_irobot_create_common_bringup, 'launch', 'create3_nodes.launch.py'])
     create3_ignition_nodes_launch = PathJoinSubstitution(
@@ -103,7 +104,7 @@ def generate_launch_description():
     yaw = LaunchConfiguration('yaw')
     turtlebot4_node_yaml_file = LaunchConfiguration('param_file')
 
-    robot_name = GetNamespacedName(namespace, 'turtlebot4')
+    robot_name = GetNamespacedName(namespace, 'robot')
 
     # Spawn robot slightly clsoer to the floor to reduce the drop
     # Ensures robot remains properly docked after the drop
@@ -219,7 +220,6 @@ def generate_launch_description():
 
     # Define LaunchDescription variable
     ld = LaunchDescription(ARGUMENTS)
-    # ld.add_action(tf_exchange) 
     ld.add_action(param_file_cmd)
     ld.add_action(spawn_robot_group_action)
     ld.add_action(rviz)

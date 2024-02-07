@@ -13,6 +13,7 @@
 #    limitations under the License.
 from geometry_msgs.msg import Twist
 import py_trees
+from py_trees.common import Status
 import rclpy 
 import time
 
@@ -20,8 +21,10 @@ from rclpy.node import Node
 
 from ros2swarm.movement_pattern.movement_pattern import MovementPattern
 from ros2swarm.utils import setup_node
-from communication_interfaces.msg import Int8Message
+from communication_interfaces.msg import Int8Message, RangeData
 from ros2swarm.utils.swarm_controll import SwarmState
+from rclpy.qos import qos_profile_sensor_data
+from irobot_create_msgs.msg import HazardDetectionVector
 
 from ros2swarm.behavior_tree.movement_pattern.basic.aggregation_pattern_bt import AggregationPatternBT
 from ros2swarm.behavior_tree.movement_pattern.basic.attraction_pattern_bt import AttractionPatternBT
@@ -73,7 +76,7 @@ class BehaviorTreePattern(Node):
             if self.start_flag:
                 self.root.tick_once()
 
-                self.get_logger().info('Ticking'+ str(self.i))
+                # self.get_logger().info('Ticking'+ str(self.i))
                 self.i += 1
 
     def swarm_command_callback(self, msg: Int8Message):
@@ -115,14 +118,44 @@ class BehaviorTreePattern(Node):
         action3 = AggregationPatternBT()
         action = DrivePatternBT()
         action1 = DrivePatternBT()
+        condition = Avoid()
+        avoidWall = py_trees.composites.Sequence('avoidWall', False, children=[condition, DrivePatternBT()])
         # self.root.add_child(action)
-        self.root = py_trees.composites.Parallel("root", children=patterns, policy=py_trees.common.ParallelPolicy.SuccessOnAll(synchronise=True))
+        self.root = py_trees.composites.Sequence("root", False, children=[avoidWall, action2])
         # self.root.add_child(action3)
 
         self.get_logger().info('Publishing : Setup.')
 
         for pattern in patterns:
             pattern.setup()
+
+class Avoid(py_trees.behaviour.Behaviour):
+    def __init__(self):
+        super().__init__("avoid")
+        self.hazard = False
+
+    def setup(self):
+        self.hazard_detection_subscription = self.create_subscription(
+            HazardDetectionVector,
+            self.get_namespace() + '/hazard_detection',
+            self.swarm_command_controlled(self.hazard_detection_callback),
+            qos_profile=qos_profile_sensor_data
+        )
+    def initialise(self) -> None:
+        self.hazard = False
+
+    def update(self) -> Status:
+        if self.hazard:
+            return py_trees.common.Status.FAILURE
+        return py_trees.common.Status.SUCCESS
+    
+    def hazard_detection_callback(self, msg):
+        if msg.detections:
+            self.hazard = True
+        else:
+            self.hazard = False
+
+
 
 def main(args=None):
     """Create a node for the attraction pattern, spins it and handles the destruction."""

@@ -57,7 +57,7 @@ class AttractionPatternBT(MovementPattern, py_trees.behaviour.Behaviour):
         
         self.scan_subscription = self.create_subscription(
             RangeData,
-            self.get_namespace() + 'range_data',
+            self.get_namespace() + '/range_data',
             self.swarm_command_controlled(self.range_data_callback),
             qos_profile=qos_profile_sensor_data
         )
