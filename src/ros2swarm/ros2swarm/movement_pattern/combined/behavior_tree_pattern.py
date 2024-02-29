@@ -13,7 +13,6 @@
 #    limitations under the License.
 from geometry_msgs.msg import Twist
 import py_trees
-from py_trees.common import Status
 import rclpy 
 import time
 
@@ -23,8 +22,7 @@ from ros2swarm.movement_pattern.movement_pattern import MovementPattern
 from ros2swarm.utils import setup_node
 from communication_interfaces.msg import Int8Message, RangeData
 from ros2swarm.utils.swarm_controll import SwarmState
-from rclpy.qos import qos_profile_sensor_data
-from irobot_create_msgs.msg import HazardDetectionVector
+
 
 from ros2swarm.behavior_tree.movement_pattern.basic.aggregation_pattern_bt import AggregationPatternBT
 from ros2swarm.behavior_tree.movement_pattern.basic.attraction_pattern_bt import AttractionPatternBT
@@ -35,6 +33,7 @@ from ros2swarm.behavior_tree.movement_pattern.basic.magnetometer_pattern_bt impo
 from ros2swarm.behavior_tree.movement_pattern.basic.minimalist_flocking_pattern_bt import MinimalistFlockingPatternBT
 from ros2swarm.behavior_tree.movement_pattern.basic.random_walk_pattern_bt import RandomWalkPatternBT
 from ros2swarm.behavior_tree.movement_pattern.basic.rat_search_pattern_bt import RatSearchPatternBT
+from src.ros2swarm.ros2swarm.behavior_tree.conditions.avoid import Avoid
 
 
 
@@ -129,31 +128,7 @@ class BehaviorTreePattern(Node):
         for pattern in patterns:
             pattern.setup()
 
-class Avoid(py_trees.behaviour.Behaviour):
-    def __init__(self):
-        super().__init__("avoid")
-        self.hazard = False
 
-    def setup(self):
-        self.hazard_detection_subscription = self.create_subscription(
-            HazardDetectionVector,
-            self.get_namespace() + '/hazard_detection',
-            self.swarm_command_controlled(self.hazard_detection_callback),
-            qos_profile=qos_profile_sensor_data
-        )
-    def initialise(self) -> None:
-        self.hazard = False
-
-    def update(self) -> Status:
-        if self.hazard:
-            return py_trees.common.Status.FAILURE
-        return py_trees.common.Status.SUCCESS
-    
-    def hazard_detection_callback(self, msg):
-        if msg.detections:
-            self.hazard = True
-        else:
-            self.hazard = False
 
 
 
