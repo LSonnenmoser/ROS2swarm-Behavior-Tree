@@ -74,6 +74,8 @@ def generate_launch_description():
         'irobot_create_common_bringup')
     pkg_irobot_create_ignition_bringup = get_package_share_directory(
         'irobot_create_ignition_bringup')
+    pkg_turtlebot4_navigation = get_package_share_directory(
+        'turtlebot4_navigation')
 
     # Paths
     turtlebot4_ros_ign_bridge_launch = PathJoinSubstitution(
@@ -88,6 +90,12 @@ def generate_launch_description():
         [pkg_irobot_create_ignition_bringup, 'launch', 'create3_ignition_nodes.launch.py'])
     robot_description_launch = PathJoinSubstitution(
         [pkg_turtlebot4_description, 'launch', 'robot_description.launch.py'])
+    localization_launch = PathJoinSubstitution(
+        [pkg_turtlebot4_navigation, 'launch', 'localization.launch.py'])
+    slam_launch = PathJoinSubstitution(
+        [pkg_turtlebot4_navigation, 'launch', 'slam.launch.py'])
+    nav2_launch = PathJoinSubstitution(
+        [pkg_turtlebot4_navigation, 'launch', 'nav2.launch.py'])
 
 
     # Parameters
@@ -206,6 +214,36 @@ def generate_launch_description():
         ),
     ])
 
+       # Localization
+    localization = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource([localization_launch]),
+        launch_arguments=[
+            ('namespace', namespace),
+            ('use_sim_time', use_sim_time)
+        ],
+        condition=IfCondition(LaunchConfiguration('localization'))
+    )
+
+        # SLAM
+    slam = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource([slam_launch]),
+        launch_arguments=[
+            ('namespace', namespace),
+            ('use_sim_time', use_sim_time)
+        ],
+        condition=IfCondition(LaunchConfiguration('slam'))
+    )
+
+    # Nav2
+    nav2 = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource([nav2_launch]),
+        launch_arguments=[
+            ('namespace', namespace),
+            ('use_sim_time', use_sim_time)
+        ],
+        condition=IfCondition(LaunchConfiguration('nav2'))
+    )
+
     # RViz
     rviz = IncludeLaunchDescription(
         PythonLaunchDescriptionSource([rviz_launch]),
@@ -222,5 +260,9 @@ def generate_launch_description():
     ld = LaunchDescription(ARGUMENTS)
     ld.add_action(param_file_cmd)
     ld.add_action(spawn_robot_group_action)
+    ld.add_action(localization)
+    ld.add_action(rviz)
+    ld.add_action(slam)
+    ld.add_action(nav2)
     ld.add_action(rviz)
     return ld

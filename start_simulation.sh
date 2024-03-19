@@ -15,7 +15,7 @@
 colcon build --symlink-install --allow-overriding communication_interfaces launch_gazebo ros2swarm&&
 source ./install/setup.bash &&
  ROS_DOMAIN_ID=42 ros2 launch launch_gazebo create_enviroment.launch.py \
- gazebo_world:=arena_large.world \
+ gazebo_world:=ignition \
  pattern:=behavior_tree_pattern \
  number_robots:=1 \
  total_robots:=1 \

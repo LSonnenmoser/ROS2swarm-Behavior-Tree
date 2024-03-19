@@ -143,7 +143,7 @@ def generate_launch_description():
                 
             ARGUMENTS = [
                     DeclareLaunchArgument('rviz', default_value='false',choices=['true', 'false'], description='Start rviz.'),
-                    DeclareLaunchArgument('world', default_value='ignition', description='Ignition World'),
+                    DeclareLaunchArgument('world', default_value=world_file_name, description='Ignition World'),
                     DeclareLaunchArgument('model', default_value='standard',choices=['standard', 'lite'],description='Turtlebot4 Model'),
                 ]
             for pose_element in ['x', 'y', 'z', 'yaw']:

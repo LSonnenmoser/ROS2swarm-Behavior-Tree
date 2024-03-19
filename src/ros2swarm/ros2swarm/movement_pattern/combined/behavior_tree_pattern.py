@@ -33,7 +33,8 @@ from ros2swarm.behavior_tree.movement_pattern.basic.magnetometer_pattern_bt impo
 from ros2swarm.behavior_tree.movement_pattern.basic.minimalist_flocking_pattern_bt import MinimalistFlockingPatternBT
 from ros2swarm.behavior_tree.movement_pattern.basic.random_walk_pattern_bt import RandomWalkPatternBT
 from ros2swarm.behavior_tree.movement_pattern.basic.rat_search_pattern_bt import RatSearchPatternBT
-from src.ros2swarm.ros2swarm.behavior_tree.conditions.avoid import Avoid
+from ros2swarm.behavior_tree.conditions.avoid import Avoid
+from ros2swarm.behavior_tree.conditions.timer import Timer
 
 
 
@@ -61,8 +62,7 @@ class BehaviorTreePattern(Node):
 
         self.timer= self.create_timer(0.001, self.timer_callback)
 
-        self.swarm_command_subscription = \
-            self.create_subscription(Int8Message, '/swarm_command',
+        self.swarm_command_subscription = self.create_subscription(Int8Message, '/swarm_command',
                                      self.swarm_command_callback, 10)
 
         
@@ -87,6 +87,7 @@ class BehaviorTreePattern(Node):
 
         ros2 topic pub --once /swarm_command communication_interfaces/msg/Int8Message "{data: 0}"
         """
+        print("swarm_callback")
         self.get_logger().debug('Robot "{}" received command "{}"'.format(self.get_namespace(), msg.data))
         if msg.data == int(SwarmState.START):
             self.start_flag = True
@@ -103,27 +104,18 @@ class BehaviorTreePattern(Node):
             RandomwalkPatternBT()
         """
         patterns=[
-                  RatSearchPatternBT(),
                   DrivePatternBT(), 
-                  RandomWalkPatternBT(), 
-                  MagnetometerPatternBT(), 
-                  AttractionPatternBT(),
-                  AggregationPatternBT(),  
-                  AttractionPattern2BT(), 
-                  DispersionPatternBT(), 
-                  MinimalistFlockingPatternBT(),
+                  RandomWalkPatternBT()
                   ]
-        action2 = RandomWalkPatternBT()
-        action3 = AggregationPatternBT()
-        action = DrivePatternBT()
-        action1 = DrivePatternBT()
-        condition = Avoid()
-        avoidWall = py_trees.composites.Sequence('avoidWall', False, children=[condition, DrivePatternBT()])
+        condition = Timer()
+        avoidWall = py_trees.composites.Sequence('avoidWall', False, children=[condition, patterns[0]])
         # self.root.add_child(action)
-        self.root = py_trees.composites.Sequence("root", False, children=[avoidWall, action2])
+        self.root = py_trees.composites.Selector("root", False, children=[avoidWall, patterns[1]])
         # self.root.add_child(action3)
 
         self.get_logger().info('Publishing : Setup.')
+
+        condition.setup()
 
         for pattern in patterns:
             pattern.setup()
