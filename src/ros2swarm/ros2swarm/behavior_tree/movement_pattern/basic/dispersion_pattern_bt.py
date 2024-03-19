@@ -124,6 +124,7 @@ class DispersionPatternBT(MovementPattern, py_trees.behaviour.Behaviour):
         """Call back if a new scan msg is available."""
         direction = self.vector_calc(incoming_msg.ranges, incoming_msg.angles)
         self.command_publisher.publish(direction)
+        self.get_logger().info('Publishing "{}"'.format(direction))
 
     def max_range_callback(self, message: DoubleMessage):
         if self.param_allow_dynamic_max_range_setting:

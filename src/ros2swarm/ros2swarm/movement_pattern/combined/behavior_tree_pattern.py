@@ -81,7 +81,7 @@ class BehaviorTreePattern(Node):
     def swarm_command_callback(self, msg: Int8Message):
         """
         Set the start flag to true if on the /swarm_command topic a SwarmState.START
-        and to false if SwarmState.STOP is revised.If the flag is ture the callback is executed.
+        and to false if SwarmState.STOP is revised.If the flag is true the callback is executed.
 
         ros2 topic pub --once /swarm_command communication_interfaces/msg/Int8Message "{data: 1}"
 
@@ -105,10 +105,12 @@ class BehaviorTreePattern(Node):
         """
         patterns=[
                   DrivePatternBT(), 
-                  RandomWalkPatternBT()
+                  RandomWalkPatternBT(),
+                  RatSearchPatternBT(),
+                  DispersionPatternBT()
                   ]
         condition = Timer()
-        avoidWall = py_trees.composites.Sequence('avoidWall', False, children=[condition, patterns[0]])
+        avoidWall = py_trees.composites.Sequence('avoidWall', False, children=[condition, patterns[3]])
         # self.root.add_child(action)
         self.root = py_trees.composites.Selector("root", False, children=[avoidWall, patterns[1]])
         # self.root.add_child(action3)

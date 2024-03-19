@@ -15,7 +15,7 @@
 colcon build --symlink-install &&
  source ./install/setup.bash &&
  ROS_DOMAIN_ID=42 ros2 launch ros2swarm bringup_robot.launch.py \
- pattern:=dispersion_pattern \
+ pattern:=behavior_tree_pattern \
  log_level:=info \
  robot:=turtlebot4 \
  sensor_type:=lidar \

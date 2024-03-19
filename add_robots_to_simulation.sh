@@ -15,18 +15,18 @@
 source ./install/setup.bash &&
  ROS_DOMAIN_ID=42 ros2 launch launch_gazebo add_robot.launch.py \
  start_index:=4 \
- gazebo_world:=arena_large.world \
- pattern:=random_walk_pattern \
- number_robots:=2 \
+ gazebo_world:=ignition \
+ pattern:=behavior_tree_pattern \
+ number_robots:=1 \
  log_level:=info \
- robot:=burger \
+ robot:=turtlebot4 \
  sensor_type:=lidar \
  version:=2 \
  x_start:=1.0 \
  x_dist:=0.5 \
  y_start:=0.0 \
  y_dist:=1.0 \
- driving_swarm:=True 
+ driving_swarm:=False 
  
 # -p pattern_name
 ## movement pattern:

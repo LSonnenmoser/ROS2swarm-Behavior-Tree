@@ -308,6 +308,8 @@ class RatSearchPatternBT(MovementPattern, py_trees.behaviour.Behaviour):
             pass
 
         self.get_logger().debug('direction:{}'.format(self.direction))
+        self.get_logger().info('Publishing "{}"'.format(self.direction))
+
         self.command_publisher.publish(self.direction)
 
     def search_wall_movement(self):
