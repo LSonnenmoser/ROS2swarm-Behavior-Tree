@@ -20,8 +20,10 @@
 import os
 import sys
 import launch_ros.actions
+from pathlib import Path
 from launch import LaunchDescription
 from launch.substitutions import LaunchConfiguration, PathJoinSubstitution
+from launch.actions import IncludeLaunchDescription, DeclareLaunchArgument
 from ament_index_python.packages import get_package_share_directory
 from launch.actions import IncludeLaunchDescription
 from launch.launch_description_sources import PythonLaunchDescriptionSource
@@ -156,56 +158,86 @@ def generate_launch_description():
         
         num = i + start_index
 
-        if driving_swarm == 'True': 
-            tf_exchange_dir = get_package_share_directory('tf_exchange')
+        if robot_type == "turtlebot4" :
+                
+            ARGUMENTS = [
 
-                
-            rviz_config_file = LaunchConfiguration('rviz_config_file', default=os.path.join(get_package_share_directory('driving_swarm_bringup'), 'rviz', 'custom.rviz'))
-                
-            rviz = IncludeLaunchDescription(
-	               PythonLaunchDescriptionSource(
-	               os.path.join(get_package_share_directory('nav2_bringup'), 'launch', 'rviz_launch.py')),
-		        #condition=IfCondition(LaunchConfiguration('use_rviz')),
-		        launch_arguments={
-		            'namespace': ['robot_', str(num)],
-		            'use_namespace': 'true',
-		            'use_sim_time': 'true',
-		            'rviz_config': rviz_config_file
-		        }.items()
-		    )
-            ld.add_action(rviz)
-                
-            # DRIVING SWARM 
-            tf_exchange = IncludeLaunchDescription(
-	                      PythonLaunchDescriptionSource(
-		                   os.path.join(tf_exchange_dir, 'launch', 'tf_exchange.launch.py')),
-		                   launch_arguments={
-		                   'namespace': ['robot_', str(num)],
-		                   'robot_name': ['robot_', str(num)],
-		                   'base_frame': baseframe,
-		                  }.items()
-		          )
-            ld.add_action(tf_exchange) 
-        
+                    DeclareLaunchArgument('rviz', default_value='false',choices=['true', 'false'], description='Start rviz.'),
+                    DeclareLaunchArgument('model', default_value='standard',choices=['standard', 'lite'],description='Turtlebot4 Model')
+                ]
+            for pose_element in ['x', 'y', 'z', 'yaw']:
+                ARGUMENTS.append(DeclareLaunchArgument(pose_element, default_value='0.0',
+                                description=f'{pose_element} component of the robot pose.'))
+            # Paths
+            robot_spawn_launch = PathJoinSubstitution(
+                [str(Path(__file__).parent.resolve()), 'turtlebot4_spawn.launch.py'])
 
-        # add gazebo node
-        gazebo_node = launch_ros.actions.Node(
-            package='launch_gazebo',
-            executable='add_bot_node',
-            namespace=['robot_namespace_', str(num)],
-            name=['gazeboRobotNode_', str(num)],
-            output='screen',
-            arguments=[
-                '--robot_name', ['robot_', str(num)],
-                '--robot_namespace', ['robot_', str(num)],
-                '-x', str(x_start + i * x_dist),
-                '-y', str(y_start + i * y_dist),
-                '-z', '0.1',
-                '--type_of_robot', robot,
-                '-ds', driving_swarm, 
-            ]
-        )
-        ld.add_action(gazebo_node)
+            # Create launch description and add actions
+            ld = LaunchDescription(ARGUMENTS)
+
+            for i in range(number_robots):
+                robot_spawn = IncludeLaunchDescription(
+                    PythonLaunchDescriptionSource([robot_spawn_launch]),
+                    launch_arguments=[
+                        ('namespace', 'turtlebot4_'+str(num)),
+                        ('rviz', LaunchConfiguration('rviz')),
+                        ('x', str(num)),
+                        ('y', LaunchConfiguration('y')),
+                        ('z', LaunchConfiguration('z')),
+                        ('yaw', LaunchConfiguration('yaw'))]
+                )   
+                ld.add_action(robot_spawn) 
+        else:
+            if driving_swarm == 'True': 
+                tf_exchange_dir = get_package_share_directory('tf_exchange')
+
+                    
+                rviz_config_file = LaunchConfiguration('rviz_config_file', default=os.path.join(get_package_share_directory('driving_swarm_bringup'), 'rviz', 'custom.rviz'))
+                    
+                rviz = IncludeLaunchDescription(
+                        PythonLaunchDescriptionSource(
+                        os.path.join(get_package_share_directory('nav2_bringup'), 'launch', 'rviz_launch.py')),
+                    #condition=IfCondition(LaunchConfiguration('use_rviz')),
+                    launch_arguments={
+                        'namespace': ['robot_', str(num)],
+                        'use_namespace': 'true',
+                        'use_sim_time': 'true',
+                        'rviz_config': rviz_config_file
+                    }.items()
+                )
+                ld.add_action(rviz)
+                    
+                # DRIVING SWARM 
+                tf_exchange = IncludeLaunchDescription(
+                                PythonLaunchDescriptionSource(
+                                os.path.join(tf_exchange_dir, 'launch', 'tf_exchange.launch.py')),
+                                launch_arguments={
+                                'namespace': ['robot_', str(num)],
+                                'robot_name': ['robot_', str(num)],
+                                'base_frame': baseframe,
+                                }.items()
+                        )
+                ld.add_action(tf_exchange) 
+            
+
+            # add gazebo node
+            gazebo_node = launch_ros.actions.Node(
+                package='launch_gazebo',
+                executable='add_bot_node',
+                namespace=['robot_namespace_', str(num)],
+                name=['gazeboRobotNode_', str(num)],
+                output='screen',
+                arguments=[
+                    '--robot_name', ['robot_', str(num)],
+                    '--robot_namespace', ['robot_', str(num)],
+                    '-x', str(x_start + i * x_dist),
+                    '-y', str(y_start + i * y_dist),
+                    '-z', '0.1',
+                    '--type_of_robot', robot,
+                    '-ds', driving_swarm, 
+                ]
+            )
+            ld.add_action(gazebo_node)
 
 
     # find out exact path of the pattern launch file

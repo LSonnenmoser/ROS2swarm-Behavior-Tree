@@ -169,9 +169,9 @@ def generate_launch_description():
                 robot_spawn = IncludeLaunchDescription(
                     PythonLaunchDescriptionSource([robot_spawn_launch]),
                     launch_arguments=[
-                        ('namespace', 'robot_'+str(i)),
+                        ('namespace', 'turtlebot4_'+str(i)),
                         ('rviz', LaunchConfiguration('rviz')),
-                        ('x', LaunchConfiguration('x')),
+                        ('x', str(i)),
                         ('y', LaunchConfiguration('y')),
                         ('z', LaunchConfiguration('z')),
                         ('yaw', LaunchConfiguration('yaw'))]
