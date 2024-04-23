@@ -52,6 +52,7 @@ def generate_launch_description():
             robot = arg.split(":=")[1]
         else:
             if arg not in ['/opt/ros/foxy/bin/ros2',
+                           'opt/ros/humble/bin/ros2'
                            'launch',
                            'ros2swarm',
                            'launch_gazebo',
@@ -88,7 +89,7 @@ def generate_launch_description():
     elif robot_type.startswith('turtlebot4'):
         robot_type = "turtlebot4"
         turtlebot4 = True
-        robot_namespace = 'turtlebot_4'
+        robot_namespace = 'turtlebot4_'
 
     ld = LaunchDescription()
 

@@ -18,7 +18,6 @@ colcon build --symlink-install &&
  pattern:=behavior_tree_pattern \
  log_level:=info \
  robot:=turtlebot4 \
- sensor_type:=lidar \
  robot_number:=1
 
 # pattern_name:
