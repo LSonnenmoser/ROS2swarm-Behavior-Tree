@@ -97,4 +97,10 @@
     drive_linear: 0.26
     drive_angular: 0.0
 
+    turn_timer_period: 0.25
+    turn_linear: 0.0
+    turn_angular: 0.26
+
+    
+
 

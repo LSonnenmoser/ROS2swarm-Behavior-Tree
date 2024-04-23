@@ -35,6 +35,7 @@ from ros2swarm.behavior_tree.movement_pattern.basic.random_walk_pattern_bt impor
 from ros2swarm.behavior_tree.movement_pattern.basic.rat_search_pattern_bt import RatSearchPatternBT
 from ros2swarm.behavior_tree.conditions.avoid import Avoid
 from ros2swarm.behavior_tree.conditions.timer import Timer
+from ros2swarm.behavior_tree.movement_pattern.basic.turn_pattern_bt import TurnPatternBT
 
 
 
@@ -105,12 +106,10 @@ class BehaviorTreePattern(Node):
         """
         patterns=[
                   DrivePatternBT(), 
-                  RandomWalkPatternBT(),
-                  RatSearchPatternBT(),
-                  DispersionPatternBT()
+                  TurnPatternBT()
                   ]
         condition = Timer()
-        avoidWall = py_trees.composites.Sequence('avoidWall', False, children=[condition, patterns[3]])
+        avoidWall = py_trees.composites.Sequence('avoidWall', False, children=[condition, patterns[0]])
         # self.root.add_child(action)
         self.root = py_trees.composites.Selector("root", False, children=[avoidWall, patterns[1]])
         # self.root.add_child(action3)

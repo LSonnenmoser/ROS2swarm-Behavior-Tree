@@ -100,6 +100,7 @@ def generate_launch_description():
     # allows to use the same configuration files for each robot type but different mesh models
     robot_type = robot
     gazebo_flag = True
+    robot_namespace = 'robot_'
     
     if robot_type.startswith('burger'):
         robot_type = "burger"
@@ -120,6 +121,7 @@ def generate_launch_description():
     elif robot_type.startswith('turtlebot4'):
         robot_type = "turtlebot4"                 #added turtlebot4
         baseframe = 'base_link' 
+        robot_namespace = 'turtlebot4_'
     
     print("robot type       |", robot_type)
     print("---------------------------------------")
@@ -169,7 +171,7 @@ def generate_launch_description():
                 robot_spawn = IncludeLaunchDescription(
                     PythonLaunchDescriptionSource([robot_spawn_launch]),
                     launch_arguments=[
-                        ('namespace', 'turtlebot4_'+str(i)),
+                        ('namespace', robot_namespace+str(i)),
                         ('rviz', LaunchConfiguration('rviz')),
                         ('x', str(i)),
                         ('y', LaunchConfiguration('y')),
@@ -228,7 +230,7 @@ def generate_launch_description():
                         os.path.join(get_package_share_directory('nav2_bringup'), 'launch', 'rviz_launch.py')),
                     #condition=IfCondition(LaunchConfiguration('use_rviz')),
                     launch_arguments={
-                        'namespace': ['robot_', str(i)],
+                        'namespace': [robot_namespace, str(i)],
                         'use_namespace': 'true',
                         'use_sim_time': 'true',
                         'rviz_config': rviz_config_file
@@ -241,7 +243,7 @@ def generate_launch_description():
                     PythonLaunchDescriptionSource(
                         os.path.join(tf_exchange_dir, 'launch', 'tf_exchange.launch.py')),
                         launch_arguments={
-                        'namespace': ['robot_', str(i)],
+                        'namespace': [robot_namespace, str(i)],
                         'robot_name': ['robot_', str(i)],
                         'base_frame': baseframe,
                     }.items()
@@ -259,7 +261,7 @@ def generate_launch_description():
                         output='screen',
                         arguments=[
                             '--robot_name', ['robot_', str(i)],
-                            '--robot_namespace', ['robot_', str(i)],
+                            '--robot_namespace', [robot_namespace, str(i)],
                             '-x', str(x_start + i * x_dist),
                             '-y', str(y_start + i * y_dist),
                             '-z', '0.1',
@@ -305,7 +307,7 @@ def generate_launch_description():
                  launch_arguments={'robot': robot,
                               'robot_type': robot_type,
 			                        'sensor_type': sensor_type,
-                              'robot_namespace': ['robot_', str(i)],
+                              'robot_namespace': [robot_namespace, str(i)],
                               'sensor_type': sensor_type, 
                               'pattern': pattern_path,
                               'config_dir': config_dir,
