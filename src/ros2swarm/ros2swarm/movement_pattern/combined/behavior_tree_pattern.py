@@ -61,10 +61,11 @@ class BehaviorTreePattern(Node):
         self.current_msg = Twist()
         self.i = 0
 
-        self.timer= self.create_timer(0.001, self.timer_callback)
-
         self.swarm_command_subscription = self.create_subscription(Int8Message, '/swarm_command',
                                      self.swarm_command_callback, 10)
+        
+        self.timer= self.create_timer(0.001, self.timer_callback)
+
 
         
 

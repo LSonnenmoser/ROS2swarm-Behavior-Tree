@@ -71,6 +71,7 @@ def generate_launch_description():
     robot_type = robot
     robot_node = True
     turtlebot4= False
+    robot_namespace = 'robot_'
     if robot_type.startswith('burger'):
         robot_type = "burger"
     elif robot_type.startswith('waffle_pi'):
@@ -87,6 +88,7 @@ def generate_launch_description():
     elif robot_type.startswith('turtlebot4'):
         robot_type = "turtlebot4"
         turtlebot4 = True
+        robot_namespace = 'turtlebot_4'
 
     ld = LaunchDescription()
 
@@ -133,7 +135,7 @@ def generate_launch_description():
         PythonLaunchDescriptionSource([launch_file_dir, '/' + 'bringup_patterns.launch.py']),
         launch_arguments={'robot': robot,
                         'robot_type': robot_type,
-                        'robot_namespace': ['robot_', str(robot_number)],
+                        'robot_namespace': [robot_namespace, str(robot_number)],
                         'pattern': pattern_path,
                         'config_dir': config_dir,
                         'urdf_file': urdf_file
