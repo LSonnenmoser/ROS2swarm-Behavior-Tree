@@ -1,28 +1,31 @@
 import py_trees
-from rclpy.qos import qos_profile_sensor_data
-from irobot_create_msgs.msg import HazardDetectionVector
-from py_trees.common import Status
+import rclpy
+from rclpy.node import Node
 
 
 
-class Timer(py_trees.behaviour.Behaviour):
+class Timer(py_trees.behaviour.Behaviour, Node):
+
     def __init__(self):
-        super().__init__("avoid")
-        self.timer=0
-        self.timer2 = 0
+        py_trees.behaviour.Behaviour.__init__(self, "timer")
+        Node.__init__(self, "timer")
+        self.timer_period=5
+        self.flag = False
 
     def setup(self):
-        pass
-    def initialise(self) -> None:
+        self.timer = self.create_timer(self.timer_period, self.timer_callback)
+
+
+    def initialise(self):
         pass
 
-    def update(self) -> Status:
-        if self.timer2 < 0:
-            self.timer=0
-        self.timer+=1
-        if self.timer < 10000:
-            self.timer2 += 1
-            return py_trees.common.Status.FAILURE
-        self.timer2 -= 1
-        return py_trees.common.Status.SUCCESS
+    def update(self):
+        rclpy.spin_once(self, timeout_sec=0)
+        
+        if self.flag:
+            return py_trees.common.Status.SUCCESS
+        
+        return py_trees.common.Status.FAILURE
     
+    def timer_callback(self):
+        self.flag = not self.flag

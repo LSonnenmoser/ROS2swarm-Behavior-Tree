@@ -52,7 +52,7 @@ class TurnPatternBT(MovementPattern, py_trees.behaviour.Behaviour):
         self.get_logger().debug("  %s [TurnPatternBT::initialise()]" % self.name)
         timer_period = float(
             self.get_parameter("turn_timer_period").get_parameter_value().double_value)
-        self.timer = self.create_timer(timer_period, self.swarm_command_controlled_timer(self.timer_callback))
+        self.timer = self.create_timer(timer_period, self.timer_callback)
         self.i = 0
         self.param_x = float(self.get_parameter("turn_linear").get_parameter_value().double_value)
         self.param_z = float(

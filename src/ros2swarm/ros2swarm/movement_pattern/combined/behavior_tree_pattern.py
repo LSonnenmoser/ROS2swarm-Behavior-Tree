@@ -13,15 +13,8 @@
 #    limitations under the License.
 from geometry_msgs.msg import Twist
 import py_trees
-import rclpy 
-import time
 
-from rclpy.node import Node
-
-from ros2swarm.movement_pattern.movement_pattern import MovementPattern
 from ros2swarm.utils import setup_node
-from communication_interfaces.msg import Int8Message, RangeData
-from ros2swarm.utils.swarm_controll import SwarmState
 
 
 from ros2swarm.behavior_tree.movement_pattern.basic.aggregation_pattern_bt import AggregationPatternBT
@@ -36,10 +29,11 @@ from ros2swarm.behavior_tree.movement_pattern.basic.rat_search_pattern_bt import
 from ros2swarm.behavior_tree.conditions.avoid import Avoid
 from ros2swarm.behavior_tree.conditions.timer import Timer
 from ros2swarm.behavior_tree.movement_pattern.basic.turn_pattern_bt import TurnPatternBT
+from ros2swarm.abstract_pattern import AbstractPattern
 
 
 
-class BehaviorTreePattern(Node):
+class BehaviorTreePattern(AbstractPattern):
     """The class for behavior tree patterns"""
 
     def __init__(self):
@@ -60,42 +54,20 @@ class BehaviorTreePattern(Node):
         
         self.current_msg = Twist()
         self.i = 0
-
-        self.swarm_command_subscription = self.create_subscription(Int8Message, '/swarm_command',
-                                     self.swarm_command_callback, 10)
         
-        self.timer= self.create_timer(0.001, self.timer_callback)
-
-
-        
+        self.timer= self.create_timer(0.001, self.swarm_command_controlled_timer(self.timer_callback))
 
 
 
 
     def timer_callback(self):
             """Publish the configured twist message when called."""
-            if self.start_flag:
-                self.root.tick_once()
+            if self.i==0:
+                 self.get_logger().info('started')
+            self.root.tick_once()
 
-                # self.get_logger().info('Ticking'+ str(self.i))
-                self.i += 1
-
-    def swarm_command_callback(self, msg: Int8Message):
-        """
-        Set the start flag to true if on the /swarm_command topic a SwarmState.START
-        and to false if SwarmState.STOP is revised.If the flag is true the callback is executed.
-
-        ros2 topic pub --once /swarm_command communication_interfaces/msg/Int8Message "{data: 1}"
-
-        ros2 topic pub --once /swarm_command communication_interfaces/msg/Int8Message "{data: 0}"
-        """
-        print("swarm_callback")
-        self.get_logger().debug('Robot "{}" received command "{}"'.format(self.get_namespace(), msg.data))
-        if msg.data == int(SwarmState.START):
-            self.start_flag = True
-        if msg.data == int(SwarmState.STOP):
-            self.start_flag = False
-
+            # self.get_logger().info('Ticking'+ str(self.i))
+            self.i += 1
 
     def formBehaviorTree(self):
         """ Create and setup the behavior tree
@@ -110,9 +82,9 @@ class BehaviorTreePattern(Node):
                   TurnPatternBT()
                   ]
         condition = Timer()
-        avoidWall = py_trees.composites.Sequence('avoidWall', False, children=[condition, patterns[0]])
+        drive = py_trees.composites.Selector('drive', False, children=[condition, patterns[0]])
         # self.root.add_child(action)
-        self.root = py_trees.composites.Selector("root", False, children=[avoidWall, patterns[1]])
+        self.root = py_trees.composites.Sequence('root', False, children=[drive, patterns[1]])
         # self.root.add_child(action3)
 
         self.get_logger().info('Publishing : Setup.')
