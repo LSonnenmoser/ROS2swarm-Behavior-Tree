@@ -16,10 +16,11 @@ import rclpy
 
 
 from geometry_msgs.msg import Twist
-from ros2swarm.movement_pattern.movement_pattern import MovementPattern
+from ros2swarm.behavior_tree.movement_pattern.movement_pattern_bt import MovementPatternBT
 
 
-class TurnPatternBT(MovementPattern, py_trees.behaviour.Behaviour):
+
+class TurnPatternBT(MovementPatternBT, py_trees.behaviour.Behaviour):
     """
     A simple pattern for driving a constant direction vector.
 
@@ -30,7 +31,7 @@ class TurnPatternBT(MovementPattern, py_trees.behaviour.Behaviour):
     def __init__(self):
         """Initialize the turn pattern."""
         py_trees.behaviour.Behaviour.__init__(self,'turn_pattern')
-        MovementPattern.__init__(self,'turn_pattern')
+        MovementPatternBT.__init__(self,'turn_pattern')
 
 
         self.declare_parameters(
@@ -46,10 +47,6 @@ class TurnPatternBT(MovementPattern, py_trees.behaviour.Behaviour):
 
         self.logger.debug("  %s [TurnPatternBT::setup()]" % self.name)
 
-    def initialise(self):
-        """Initialize the attraction pattern node."""
-
-        self.get_logger().debug("  %s [TurnPatternBT::initialise()]" % self.name)
         timer_period = float(
             self.get_parameter("turn_timer_period").get_parameter_value().double_value)
         self.timer = self.create_timer(timer_period, self.timer_callback)
@@ -57,6 +54,10 @@ class TurnPatternBT(MovementPattern, py_trees.behaviour.Behaviour):
         self.param_x = float(self.get_parameter("turn_linear").get_parameter_value().double_value)
         self.param_z = float(
             self.get_parameter("turn_angular").get_parameter_value().double_value)
+
+    def initialise(self):
+        """Initialize the attraction pattern node."""
+        self.get_logger().debug("  %s [TurnPatternBT::initialise()]" % self.name)
 
 
 
@@ -77,8 +78,6 @@ class TurnPatternBT(MovementPattern, py_trees.behaviour.Behaviour):
 
         self.get_logger().debug("  %s [TurnPatternBT::terminate().terminate()][%s->%s]" % (self.name, self.status, new_status))
         
-        # MovementPattern.destroy_node(self)
-
     
     def timer_callback(self):
         """Publish the configured twist message when called."""
