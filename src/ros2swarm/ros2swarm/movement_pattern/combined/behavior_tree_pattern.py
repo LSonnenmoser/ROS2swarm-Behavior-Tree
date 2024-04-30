@@ -26,7 +26,7 @@ from ros2swarm.behavior_tree.movement_pattern.basic.magnetometer_pattern_bt impo
 from ros2swarm.behavior_tree.movement_pattern.basic.minimalist_flocking_pattern_bt import MinimalistFlockingPatternBT
 from ros2swarm.behavior_tree.movement_pattern.basic.random_walk_pattern_bt import RandomWalkPatternBT
 from ros2swarm.behavior_tree.movement_pattern.basic.rat_search_pattern_bt import RatSearchPatternBT
-from ros2swarm.behavior_tree.conditions.avoid import Avoid
+from ros2swarm.behavior_tree.conditions.obstacle_detection import Obstacle_detection
 from ros2swarm.behavior_tree.conditions.timer import Timer
 from ros2swarm.behavior_tree.movement_pattern.basic.turn_pattern_bt import TurnPatternBT
 from ros2swarm.abstract_pattern import AbstractPattern
@@ -55,7 +55,7 @@ class BehaviorTreePattern(AbstractPattern):
         self.current_msg = Twist()
         self.i = 0
         
-        self.timer= self.create_timer(0.001, self.swarm_command_controlled_timer(self.timer_callback))
+        self.timer= self.create_timer(0, self.swarm_command_controlled_timer(self.timer_callback))
 
 
 

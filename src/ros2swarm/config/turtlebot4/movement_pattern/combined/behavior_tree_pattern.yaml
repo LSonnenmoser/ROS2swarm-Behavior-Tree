@@ -101,6 +101,14 @@
     turn_linear: 0.0
     turn_angular: 0.26
 
+        #obstacle_detection
+    obstacle_detection_max_range: 0.8
+    obstacle_detection_min_range: 0.13
+    obstacle_detection_threshold: 5
+
+    
+
+
     
 
 

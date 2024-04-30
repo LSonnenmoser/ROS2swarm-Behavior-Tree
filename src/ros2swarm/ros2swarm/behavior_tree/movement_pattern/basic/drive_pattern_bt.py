@@ -20,54 +20,53 @@ from ros2swarm.behavior_tree.movement_pattern.movement_pattern_bt import Movemen
 
 
 
-class TurnPatternBT(MovementPatternBT, py_trees.behaviour.Behaviour):
+class DrivePatternBT(MovementPatternBT, py_trees.behaviour.Behaviour):
     """
-    A simple pattern for driving a constant direction vector.
+    A simple pattern for turning a constant time with a constant speed.
 
     Which is configured in with the parameters of this pattern.
-    How often the direction is published is configured in the timer period parameter.
     """
 
     def __init__(self):
-        """Initialize the turn pattern."""
-        py_trees.behaviour.Behaviour.__init__(self,'turn_pattern')
-        MovementPatternBT.__init__(self,'turn_pattern')
+        """Initialize the drive pattern."""
+        py_trees.behaviour.Behaviour.__init__(self,'drive_pattern')
+        MovementPatternBT.__init__(self,'drive_pattern')
 
 
         self.declare_parameters(
             namespace='',
             parameters=[
-                ('turn_timer_period', 0.0),
-                ('turn_linear', 0.0),
-                ('turn_angular', 0.0),
+                ('drive_timer_period', 0.0),
+                ('drive_linear', 0.0),
+                ('drive_angular', 0.0),
             ])
     
     def setup(self): 
         """Initialize the aggregation pattern node.""" 
 
-        self.logger.debug("  %s [TurnPatternBT::setup()]" % self.name)
-
-        timer_period = float(
-            self.get_parameter("turn_timer_period").get_parameter_value().double_value)
-        self.timer = self.create_timer(timer_period, self.timer_callback)
-        self.i = 0
-        self.param_x = float(self.get_parameter("turn_linear").get_parameter_value().double_value)
-        self.param_z = float(
-            self.get_parameter("turn_angular").get_parameter_value().double_value)
+        self.logger.debug("  %s [DrivePatternBT::setup()]" % self.name)
 
     def initialise(self):
-        """Initialize the attraction pattern node."""
-        self.get_logger().debug("  %s [TurnPatternBT::initialise()]" % self.name)
+        """Initialize the pattern node."""
+        self.get_logger().debug("  %s [DrivePatternBT::initialise()]" % self.name)
 
+
+        timer_period = float(
+            self.get_parameter("drive_timer_period").get_parameter_value().double_value)
+        self.timer = self.create_timer(timer_period, self.timer_callback)
+        self.i = 0
+        self.param_x = float(self.get_parameter("drive_linear").get_parameter_value().double_value)
+        self.param_z = float(
+            self.get_parameter("drive_angular").get_parameter_value().double_value)
 
 
     def update(self):
 
         """ spin node once """
 
-        self.get_logger().debug("  %s [TurnPatternBT::update()]" % self.name)
+        self.get_logger().debug("  %s [DrivePatternBT::update()]" % self.name)
 
-        self.feedback_message = "spin turn pattern once"
+        self.feedback_message = "spin drive pattern once"
         rclpy.spin_once(self, timeout_sec=0)
 
         return py_trees.common.Status.RUNNING
@@ -76,7 +75,9 @@ class TurnPatternBT(MovementPatternBT, py_trees.behaviour.Behaviour):
 
         """ destroy node """
 
-        self.get_logger().debug("  %s [TurnPatternBT::terminate().terminate()][%s->%s]" % (self.name, self.status, new_status))
+        self.get_logger().debug("  %s [DrivePatternBT::terminate().terminate()][%s->%s]" % (self.name, self.status, new_status))
+
+        self.timer.destroy();
         
     
     def timer_callback(self):
