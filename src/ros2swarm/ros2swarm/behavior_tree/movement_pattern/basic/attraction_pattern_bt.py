@@ -36,18 +36,9 @@ class AttractionPatternBT(MovementPattern, py_trees.behaviour.Behaviour):
 
 
 
-
-
-
-
     def setup(self):
         """Initialize the attraction pattern node."""
         self.get_logger().debug("  %s [Attraction::setup()]" % self.name)
-
-
-
- 
-
 
 
     def initialise(self):
@@ -114,8 +105,7 @@ class AttractionPatternBT(MovementPattern, py_trees.behaviour.Behaviour):
         """
 
         self.get_logger().debug("  %s [Attraction::terminate().terminate()][%s->%s]" % (self.name, self.status, new_status))
-        
-        # AttractionPatternBT.destroy_node()
+        self.scan_subscription.destroy()
 
 
     def range_data_callback(self, incoming_msg):

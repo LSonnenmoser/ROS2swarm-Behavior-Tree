@@ -78,6 +78,7 @@ class BehaviorTreePattern(AbstractPattern):
             RandomwalkPatternBT()
         """
         patterns=[
+                  AttractionPatternBT(),
                   DrivePatternBT(), 
                   TurnPatternBT()
                   ]
@@ -86,7 +87,7 @@ class BehaviorTreePattern(AbstractPattern):
         # self.root.add_child(action)
         self.root = py_trees.composites.Sequence('root', False, children=[drive, patterns[1]])
         # self.root.add_child(action3)
-
+        self.root = patterns[0];
         self.get_logger().info('Publishing : Setup.')
 
         condition.setup()
