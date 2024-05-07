@@ -83,11 +83,11 @@ class BehaviorTreePattern(AbstractPattern):
                   TurnPatternBT()
                   ]
         condition = Timer()
+        condition2 = Obstacle_detection()
         drive = py_trees.composites.Selector('drive', False, children=[condition, patterns[0]])
         # self.root.add_child(action)
-        self.root = py_trees.composites.Sequence('root', False, children=[drive, patterns[1]])
-        # self.root.add_child(action3)
-        self.root = patterns[0];
+        # self.root = py_trees.composites.Sequence('root', False, children=[drive, patterns[1]])
+        self.root = py_trees.composites.Sequence("root", False, children=[condition2,patterns[1]])
         self.get_logger().info('Publishing : Setup.')
 
         condition.setup()

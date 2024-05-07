@@ -2,15 +2,26 @@ import py_trees
 from rclpy.qos import qos_profile_sensor_data
 from irobot_create_msgs.msg import HazardDetectionVector
 from py_trees.common import Status
+from rclpy.node import Node
+import rclpy
+
 
 from ros2swarm.utils.scan_calculation_functions import ScanCalculationFunctions
 
 
 
-class Obstacle_detection(py_trees.behaviour.Behaviour):
+class Obstacle_detection(py_trees.behaviour.Behaviour, Node):
     def __init__(self):
-        super().__init__("avoid")
+        py_trees.behaviour.Behaviour.__init__(self,"obstacle_detection")
+        Node.__init__(self,"obstacle_detection")
         self.obstacle_free = False
+        self.declare_parameters(
+            namespace='',
+            parameters=[
+                ('obstacle_detection_max_range', 0.0),
+                ('obstacle_detection_min_range', 0.0),
+                ('obstacle_detection_threshold', 0)
+            ])
 
     def setup(self):
         self.range_data_subscription= self.create_subscription(
@@ -29,7 +40,9 @@ class Obstacle_detection(py_trees.behaviour.Behaviour):
         self.param_threshold = self.get_parameter(
             "obstacle_detection_threshold").get_parameter_value().integer_value
 
-    def update(self) -> Status:
+    def update(self):
+        rclpy.spin_once(self, timeout_sec=0)
+        
         if self.obstacle_free:
             return py_trees.common.Status.FAILURE
         return py_trees.common.Status.SUCCESS

@@ -7,17 +7,17 @@ import rclpy
 from geometry_msgs.msg import Twist
 from communication_interfaces.msg import RangeData
 from rclpy.qos import qos_profile_sensor_data
-from ros2swarm.movement_pattern.movement_pattern import MovementPattern
 from ros2swarm.utils.scan_calculation_functions import ScanCalculationFunctions
+from ros2swarm.behavior_tree.movement_pattern.movement_pattern_bt import MovementPatternBT
 
 
 
-class AttractionPatternBT(MovementPattern, py_trees.behaviour.Behaviour):
+class AttractionPatternBT(MovementPatternBT, py_trees.behaviour.Behaviour):
 
     def __init__(self):
 
         """Initialize the attraction pattern node."""
-        MovementPattern.__init__(self,'attraction_pattern')
+        MovementPatternBT.__init__(self,'attraction_pattern')
         py_trees.behaviour.Behaviour.__init__(self,'attraction_pattern')
         self.declare_parameters(
             namespace='',
@@ -49,7 +49,7 @@ class AttractionPatternBT(MovementPattern, py_trees.behaviour.Behaviour):
         self.scan_subscription = self.create_subscription(
             RangeData,
             self.get_namespace() + '/range_data',
-            self.swarm_command_controlled(self.range_data_callback),
+            self.range_data_callback,
             qos_profile=qos_profile_sensor_data
         )
 
@@ -105,7 +105,6 @@ class AttractionPatternBT(MovementPattern, py_trees.behaviour.Behaviour):
         """
 
         self.get_logger().debug("  %s [Attraction::terminate().terminate()][%s->%s]" % (self.name, self.status, new_status))
-        self.scan_subscription.destroy()
 
 
     def range_data_callback(self, incoming_msg):
