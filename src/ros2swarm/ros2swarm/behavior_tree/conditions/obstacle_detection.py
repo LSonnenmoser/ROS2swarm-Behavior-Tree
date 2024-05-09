@@ -1,6 +1,7 @@
 import py_trees
 from rclpy.qos import qos_profile_sensor_data
-from irobot_create_msgs.msg import HazardDetectionVector
+from communication_interfaces.msg import RangeData
+
 from py_trees.common import Status
 from rclpy.node import Node
 import rclpy
@@ -25,7 +26,7 @@ class Obstacle_detection(py_trees.behaviour.Behaviour, Node):
 
     def setup(self):
         self.range_data_subscription= self.create_subscription(
-            HazardDetectionVector,
+            RangeData,
             self.get_namespace() + '/range_data',
             self.swarm_command_controlled(self.range_data_callback),
             qos_profile=qos_profile_sensor_data
