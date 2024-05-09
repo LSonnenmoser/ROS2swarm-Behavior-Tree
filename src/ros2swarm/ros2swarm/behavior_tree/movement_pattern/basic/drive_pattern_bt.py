@@ -92,5 +92,5 @@ class DrivePatternBT(MovementPatternBT, py_trees.behaviour.Behaviour):
         msg.linear.x = self.param_x
         msg.angular.z = self.param_z
         self.command_publisher.publish(msg)
-        self.get_logger().info('Publishing {}:"{}"'.format(self.i, msg))
+        # self.get_logger().info('Publishing {}:"{}"'.format(self.i, msg))
         self.i += 1

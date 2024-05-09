@@ -123,7 +123,7 @@ class HardwareProtectionLayer(AbstractPattern):
 
         if adjust:
             msg = direction
-            self.get_logger().debug('Adjusting to"%s"' % direction)
+            self.get_logger().info('Adjusting to"%s"' % direction)
 
         self.publisher_cmd_vel.publish(msg)
 
@@ -142,7 +142,7 @@ class HardwareProtectionLayer(AbstractPattern):
         
         if adjust:
             self.publisher_cmd_vel.publish(direction)
-            self.get_logger().debug('Adjusting to"%s"' % direction)
+            self.get_logger().info('Adjusting to"%s"' % direction)
 
 def main(args=None):
     setup_node.init_and_spin(args, HardwareProtectionLayer)
