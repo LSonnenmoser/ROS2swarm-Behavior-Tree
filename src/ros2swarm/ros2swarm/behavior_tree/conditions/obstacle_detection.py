@@ -45,8 +45,11 @@ class Obstacle_detection(py_trees.behaviour.Behaviour, Node):
         rclpy.spin_once(self, timeout_sec=0)
         
         if self.obstacle_free:
-            return py_trees.common.Status.FAILURE
-        return py_trees.common.Status.SUCCESS
+            self.get_logger.info("obstacle free")
+            return py_trees.common.Status.SUCCESS
+        self.get_logger.info("obstacle")
+        
+        return py_trees.common.Status.FAILURE
     
     def range_data_callback(self, msg):
        
