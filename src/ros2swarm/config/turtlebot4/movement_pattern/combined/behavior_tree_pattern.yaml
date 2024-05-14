@@ -22,7 +22,7 @@
     max_translational_velocity: 0.26
     max_rotational_velocity: 1.82
 
-    attraction_max_range: 0.8 # 0.8 on turtle
+    attraction_max_range: 1.8 # 0.8 on turtle
     attraction_min_range: 0.13
     attraction_front_attraction: -1.0
     attraction_threshold: 1
@@ -31,7 +31,7 @@
     max_translational_velocity: 0.26
     max_rotational_velocity: 1.82
 
-    attraction2_max_range: 0.8 # 0.8 on turtle
+    attraction2_max_range: 1.8 # 0.8 on turtle
     attraction2_min_range: 0.13
     attraction2_front_attraction: 1.0
     attraction2_threshold: 1
@@ -98,7 +98,7 @@
     turn_angular: 0.26
 
         #obstacle_detection
-    obstacle_detection_max_range: 4.0
+    obstacle_detection_max_range: 0.7
     obstacle_detection_min_range: 0.13
     obstacle_detection_threshold: 5
 

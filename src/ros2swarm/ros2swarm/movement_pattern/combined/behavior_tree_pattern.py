@@ -78,20 +78,25 @@ class BehaviorTreePattern(AbstractPattern):
             RandomwalkPatternBT()
         """
         patterns=[
-                  AttractionPatternBT(),
+                  DispersionPatternBT(),
                   DrivePatternBT(), 
+                  DrivePatternBT(),
                   TurnPatternBT(),
                   RandomWalkPatternBT()
                   ]
-        condition = Timer()
-        condition2 = Obstacle_detection()
-        drive = py_trees.composites.Sequence('drive', False, children=[condition2, patterns[0]])
-        # self.root.add_child(action)
-        # self.root = py_trees.composites.Sequence('root', False, children=[drive, patterns[1]])
-        self.root = py_trees.composites.Selector("root", False, children=[drive,patterns[3]])
-        self.get_logger().info('Publishing : Setup.')
+        condition = Timer(5)
+        # condition3 = Timer(5)
+        # condition2 = Obstacle_detection()
+        # drive = py_trees.composites.Sequence('drive', False, children=[condition2, patterns[1]])
+        # drive_turn = py_trees.composites.Sequence("drive_turn", False, children=[condition3, patterns[2]])
+        # turn = py_trees.composites.Selector("turn", False, children=[drive_turn, patterns[3]])
+        # self.root = py_trees.composites.Selector("root", False, children=[drive,patterns[0]])
+        # self.get_logger().info('Publishing : Setup.')
 
-        condition2.setup()
+        # condition.setup()
+        # condition2.setup()
+        # condition3.setup()
+        self.root=AttractionPattern2BT()
 
         for pattern in patterns:
             pattern.setup()

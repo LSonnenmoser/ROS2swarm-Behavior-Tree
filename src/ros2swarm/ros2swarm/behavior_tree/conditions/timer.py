@@ -6,10 +6,10 @@ from rclpy.node import Node
 
 class Timer(py_trees.behaviour.Behaviour, Node):
 
-    def __init__(self):
+    def __init__(self, timer_period):
         py_trees.behaviour.Behaviour.__init__(self, "timer")
         Node.__init__(self, "timer")
-        self.timer_period=5
+        self.timer_period=timer_period
         self.flag = False
 
     def setup(self):
@@ -28,4 +28,5 @@ class Timer(py_trees.behaviour.Behaviour, Node):
         return py_trees.common.Status.FAILURE
     
     def timer_callback(self):
+        self.get_logger().info("Timer change")
         self.flag = not self.flag
