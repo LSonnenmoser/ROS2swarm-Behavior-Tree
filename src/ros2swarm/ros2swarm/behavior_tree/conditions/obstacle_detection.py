@@ -28,30 +28,31 @@ class Obstacle_detection(py_trees.behaviour.Behaviour, Node):
         self.range_data_subscription= self.create_subscription(
             RangeData,
             self.get_namespace() + '/range_data',
-            self.swarm_command_controlled(self.range_data_callback),
+            self.range_data_callback,
             qos_profile=qos_profile_sensor_data
         )
     def initialise(self) -> None:
-        self.obstacle_free = False
 
         self.param_max_range = float(self.get_parameter(
             "obstacle_detection_max_range").get_parameter_value().double_value)
-        self.param_min_range = self.get_parameter(
-            "obstacle_detection_min_range").get_parameter_value().double_value
-        self.param_threshold = self.get_parameter(
-            "obstacle_detection_threshold").get_parameter_value().integer_value
+        self.param_min_range = float(self.get_parameter(
+            "obstacle_detection_min_range").get_parameter_value().double_value)
+        self.param_threshold = int(self.get_parameter(
+            "obstacle_detection_threshold").get_parameter_value().integer_value)
 
     def update(self):
         rclpy.spin_once(self, timeout_sec=0)
         
         if self.obstacle_free:
-            self.get_logger().info("obstacle free")
             return py_trees.common.Status.SUCCESS
-        self.get_logger().info("obstacle")
         
         return py_trees.common.Status.FAILURE
     
     def range_data_callback(self, msg):
-       
+        # self.get_logger().info(msg.ranges)
         ranges = ScanCalculationFunctions.adjust_ranges(msg.ranges, self.param_min_range, self.param_max_range)
+        before  = self.obstacle_free
         self.obstacle_free = ScanCalculationFunctions.is_obstacle_free(self.param_max_range, ranges, self.param_threshold)
+        if before != self.obstacle_free:
+            print("It is now obstacle free: ", self.obstacle_free)
+        

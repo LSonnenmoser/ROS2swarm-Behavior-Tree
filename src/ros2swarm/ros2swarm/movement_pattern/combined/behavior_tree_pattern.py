@@ -80,17 +80,18 @@ class BehaviorTreePattern(AbstractPattern):
         patterns=[
                   AttractionPatternBT(),
                   DrivePatternBT(), 
-                  TurnPatternBT()
+                  TurnPatternBT(),
+                  RandomWalkPatternBT()
                   ]
         condition = Timer()
         condition2 = Obstacle_detection()
-        drive = py_trees.composites.Selector('drive', False, children=[condition, patterns[0]])
+        drive = py_trees.composites.Sequence('drive', False, children=[condition2, patterns[0]])
         # self.root.add_child(action)
         # self.root = py_trees.composites.Sequence('root', False, children=[drive, patterns[1]])
-        self.root = py_trees.composites.Sequence("root", False, children=[condition2,patterns[1]])
+        self.root = py_trees.composites.Selector("root", False, children=[drive,patterns[3]])
         self.get_logger().info('Publishing : Setup.')
 
-        condition.setup()
+        condition2.setup()
 
         for pattern in patterns:
             pattern.setup()
