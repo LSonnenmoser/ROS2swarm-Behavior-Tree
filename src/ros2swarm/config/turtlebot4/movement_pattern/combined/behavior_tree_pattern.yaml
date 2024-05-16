@@ -31,13 +31,13 @@
     max_translational_velocity: 0.26
     max_rotational_velocity: 1.90
 
-    attraction2_max_range: 1.8 # 0.8 on turtle
+    attraction2_max_range: 0.8 # 0.8 on turtle
     attraction2_min_range: 0.164
     attraction2_front_attraction: 1.0
     attraction2_threshold: 1
     attraction2_linear_if_alone: 0.0
     attraction2_angular_if_alone: 1.0
-    max_translational_velocity: 0.26
+    max_translational_velocity: 0.0.31
     max_rotational_velocity: 1.90
 
     dispersion_max_range: 1.2 # 1.2 on turtle,  # max range: 3500mm
