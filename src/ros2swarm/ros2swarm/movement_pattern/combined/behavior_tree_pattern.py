@@ -101,7 +101,8 @@ class BehaviorTreePattern(AbstractPattern):
         # condition.setup()
         # condition2.setup()
         # condition3.setup()
-        self.root=py_trees.composites.Sequence("root", False, [condition,patterns[2]])
+        # self.root=py_trees.composites.Sequence("root", False, [condition,patterns[2]])
+        self.root=patterns[2]
 
         for pattern in patterns:
             pattern.setup()
