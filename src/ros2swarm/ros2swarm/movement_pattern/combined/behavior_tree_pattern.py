@@ -78,12 +78,17 @@ class BehaviorTreePattern(AbstractPattern):
             RandomwalkPatternBT()
         """
         patterns=[
-                  DispersionPatternBT(),
-                  DrivePatternBT(), 
-                  DrivePatternBT(),
-                  TurnPatternBT(),
-                  RandomWalkPatternBT()
-                  ]
+                AggregationPatternBT(),
+                AttractionPatternBT(),
+                AttractionPattern2BT(),
+                DispersionPatternBT(),
+                DrivePatternBT(), 
+                MagnetometerPatternBT(),
+                MinimalistFlockingPatternBT(),
+                RandomWalkPatternBT(),
+                RatSearchPatternBT(),
+                TurnPatternBT(),
+                ]
         condition = Timer(5)
         # condition3 = Timer(5)
         # condition2 = Obstacle_detection()
@@ -96,7 +101,7 @@ class BehaviorTreePattern(AbstractPattern):
         # condition.setup()
         # condition2.setup()
         # condition3.setup()
-        self.root=AttractionPattern2BT()
+        self.root=py_trees.composites.Sequence("root", False, [condition,patterns[1]])
 
         for pattern in patterns:
             pattern.setup()
