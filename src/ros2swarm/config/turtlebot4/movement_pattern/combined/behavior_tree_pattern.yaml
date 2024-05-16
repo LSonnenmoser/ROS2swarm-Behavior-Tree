@@ -1,8 +1,8 @@
 /**:
   ros__parameters:
     random_walk_timer_period: 0.25
-    random_walk_linear: 0.26
-    random_walk_angular: 1.82
+    random_walk_linear: 0.31
+    random_walk_angular: 1.90
     random_walk_rot_interval: 3.5
     random_walk_lin_interval_min: 10.0
     random_walk_lin_interval_max: 15.0
@@ -19,8 +19,8 @@
     aggregation_object_min_width: 2
     aggregation_object_max_width: 8
     aggregation_stay_in_growing_groups: true
-    max_translational_velocity: 0.26
-    max_rotational_velocity: 1.82
+    max_translational_velocity: 0.31
+    max_rotational_velocity: 1.90
 
     attraction_max_range: 2.0 # 0.8 on turtle
     attraction_min_range: 0.13
@@ -28,8 +28,8 @@
     attraction_threshold: 1
     attraction_linear_if_alone: 0.0
     attraction_angular_if_alone: 1.0
-    max_translational_velocity: 0.26
-    max_rotational_velocity: 1.82
+    max_translational_velocity: 0.31
+    max_rotational_velocity: 1.90
 
     attraction2_max_range: 1.8 # 0.8 on turtle
     attraction2_min_range: 0.13
@@ -37,8 +37,8 @@
     attraction2_threshold: 1
     attraction2_linear_if_alone: 0.0
     attraction2_angular_if_alone: 1.0
-    max_translational_velocity: 0.26
-    max_rotational_velocity: 1.82
+    max_translational_velocity: 0.31
+    max_rotational_velocity: 1.90
 
     dispersion_max_range: 1.2 # 1.2 on turtle,  # max range: 3500mm
     dispersion_min_range: 0.13                # min range: 120mm
@@ -47,16 +47,16 @@
     dispersion_linear_if_alone: 0.0
     dispersion_angular_if_alone: 1.0
     dispersion_allow_dynamic_max_range_setting: False
-    max_translational_velocity: 0.26 # max: 0.26 m/s
-    max_rotational_velocity: 1.82    # max: 1.82 rad/s
+    max_translational_velocity: 0.31 # max: 0.31 m/s
+    max_rotational_velocity: 1.90    # max: 1.90 rad/s
 
     magnetometer_target_direction_x: 80.0 # degree
     magnetometer_front_attraction: 0.0
     magnetometer_stop_when_target_direction_reached: True
     magnetometer_allowed_delta_in_target_direction: 20.0 # degree
     magnetometer_rotational_velocity: 0.6  # rad/s
-    max_translational_velocity: 0.26 # max: 0.26 m/s
-    max_rotational_velocity: 1.82    # max: 1.82 rad/s
+    max_translational_velocity: 0.31 # max: 0.31 m/s
+    max_rotational_velocity: 1.90    # max: 1.90 rad/s
 
     minimalist_flocking_translational_velocity: 0.2
     minimalist_flocking_rotational_left_velocity: 0.2
@@ -86,16 +86,16 @@
     rat_search_wall_batch_size: 2.0
 
 
-    max_translational_velocity: 0.26 # max: 0.26 m/s
-    max_rotational_velocity: 1.82    # max: 1.82 rad/s
+    max_translational_velocity: 0.31 # max: 0.31 m/s
+    max_rotational_velocity: 1.90    # max: 1.90 rad/s
 
     drive_timer_period: 0.25
-    drive_linear: 0.26
+    drive_linear: 0.31
     drive_angular: 0.0
 
     turn_timer_period: 0.25
     turn_linear: 0.0
-    turn_angular: 0.26
+    turn_angular: 0.31
 
         #obstacle_detection
     obstacle_detection_max_range: 0.7
