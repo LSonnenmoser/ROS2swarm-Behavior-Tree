@@ -8,7 +8,7 @@
     random_walk_lin_interval_max: 15.0
 
     aggregation_max_range: 1.2
-    aggregation_min_range: 0.13
+    aggregation_min_range: 0.164
     aggregation_front_attraction: 0.5
     aggregation_time_scale: 24.0
     aggregation_base_stay_time: 16.0
@@ -23,7 +23,7 @@
     max_rotational_velocity: 1.90
 
     attraction_max_range: 2.0 # 0.8 on turtle
-    attraction_min_range: 0.13
+    attraction_min_range: 0.164
     attraction_front_attraction: -1.0
     attraction_threshold: 1
     attraction_linear_if_alone: 0.0
@@ -32,7 +32,7 @@
     max_rotational_velocity: 1.90
 
     attraction2_max_range: 1.8 # 0.8 on turtle
-    attraction2_min_range: 0.13
+    attraction2_min_range: 0.164
     attraction2_front_attraction: 1.0
     attraction2_threshold: 1
     attraction2_linear_if_alone: 0.0
@@ -41,7 +41,7 @@
     max_rotational_velocity: 1.90
 
     dispersion_max_range: 1.2 # 1.2 on turtle,  # max range: 3500mm
-    dispersion_min_range: 0.13                # min range: 120mm
+    dispersion_min_range: 0.164                # min range: 120mm
     dispersion_front_attraction: 1.0
     dispersion_threshold: 1
     dispersion_linear_if_alone: 0.0
@@ -99,7 +99,7 @@
 
         #obstacle_detection
     obstacle_detection_max_range: 0.7
-    obstacle_detection_min_range: 0.13
+    obstacle_detection_min_range: 0.164
     obstacle_detection_threshold: 5
 
     
