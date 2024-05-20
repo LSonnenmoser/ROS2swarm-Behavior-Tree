@@ -143,7 +143,7 @@ class AggregationPatternBT(MovementPattern, py_trees.behaviour.Behaviour):
         """Call back if a new scan msg is available."""
         direction = self.vector_calc(incoming_msg)
         self.command_publisher.publish(direction)
-        self.get_logger.info('Publishing:"{}"'.format(direction))
+        self.get_logger().info('Publishing:"{}"'.format(direction))
 
     def identify_robots(self, msg):
         """Identifies if a scan contains robots, based on the settings in the pattern parameters.
