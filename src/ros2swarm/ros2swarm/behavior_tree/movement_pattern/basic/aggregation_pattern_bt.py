@@ -158,7 +158,7 @@ class AggregationPatternBT(MovementPattern, py_trees.behaviour.Behaviour):
                                                                          reduction=self.param_reduction,
                                                                          min_width=self.param_object_min_width,
                                                                          max_width=self.param_object_max_width)
-        self.get_logger().debug('Found "{}" robots'.format(len(robots)))
+        self.get_logger().info('Found "{}" robots'.format(len(robots)))
         return robots, robots_center
 
     def explore(self, range_data):
