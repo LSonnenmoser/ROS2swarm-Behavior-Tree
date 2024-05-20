@@ -20,11 +20,11 @@ import py_trees
 from ros2swarm.utils import setup_node
 from communication_interfaces.msg import RangeData
 from rclpy.qos import qos_profile_sensor_data
-from ros2swarm.movement_pattern.movement_pattern import MovementPattern
+from ros2swarm.behavior_tree.movement_pattern.movement_pattern_bt import MovementPatternBT
 from ros2swarm.utils.scan_calculation_functions import ScanCalculationFunctions
 
 
-class AttractionPattern2BT(MovementPattern, py_trees.behaviour.Behaviour):
+class AttractionPattern2BT(MovementPatternBT, py_trees.behaviour.Behaviour):
     """
     Pattern to reach an group of the participating robots in the available area.
 
@@ -37,7 +37,7 @@ class AttractionPattern2BT(MovementPattern, py_trees.behaviour.Behaviour):
 
     def __init__(self):
         """Initialize the attraction pattern node."""
-        MovementPattern.__init__(self, 'attraction_pattern2')
+        MovementPatternBT.__init__(self, 'attraction_pattern2')
         py_trees.behaviour.Behaviour.__init__(self,'attraction_pattern2')
         self.declare_parameters(
             namespace='',

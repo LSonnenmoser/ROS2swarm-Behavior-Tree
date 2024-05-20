@@ -18,13 +18,13 @@ import py_trees
 from geometry_msgs.msg import Twist
 from ros2swarm.utils import setup_node
 from rclpy.qos import qos_profile_sensor_data
-from ros2swarm.movement_pattern.movement_pattern import MovementPattern
+from ros2swarm.behavior_tree.movement_pattern.movement_pattern_bt import MovementPatternBT
 
 from ros2swarm.utils.scan_calculation_functions import ScanCalculationFunctions
 from communication_interfaces.msg import DoubleMessage, RangeData
 
 
-class DispersionPatternBT(MovementPattern, py_trees.behaviour.Behaviour):
+class DispersionPatternBT(MovementPatternBT, py_trees.behaviour.Behaviour):
     """
     Pattern to reach an distribution of the participating robots in the available area.
 
@@ -35,7 +35,7 @@ class DispersionPatternBT(MovementPattern, py_trees.behaviour.Behaviour):
 
     def __init__(self):
         """Initialize the dispersion pattern node."""
-        MovementPattern.__init__(self,'dispersion_pattern')
+        MovementPatternBT.__init__(self,'dispersion_pattern')
         py_trees.behaviour.Behaviour.__init__(self,'dispersion_pattern')
         self.declare_parameters(
             namespace='',
@@ -64,7 +64,7 @@ class DispersionPatternBT(MovementPattern, py_trees.behaviour.Behaviour):
         self.range_data_subscription = self.create_subscription(
             RangeData,
             self.get_namespace() + '/range_data',
-            self.swarm_command_controlled(self.range_data_callback),
+            self.range_data_callback,
             qos_profile=qos_profile_sensor_data
         )
 
@@ -124,7 +124,7 @@ class DispersionPatternBT(MovementPattern, py_trees.behaviour.Behaviour):
         """Call back if a new scan msg is available."""
         direction = self.vector_calc(incoming_msg.ranges, incoming_msg.angles)
         self.command_publisher.publish(direction)
-        self.get_logger().info('Publishing "{}"'.format(direction))
+        self.get_logger().debug('Publishing "{}"'.format(direction))
 
     def max_range_callback(self, message: DoubleMessage):
         if self.param_allow_dynamic_max_range_setting:

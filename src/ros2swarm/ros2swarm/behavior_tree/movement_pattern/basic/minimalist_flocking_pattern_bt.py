@@ -21,7 +21,7 @@ from geometry_msgs.msg import Twist
 from ros2swarm.utils import setup_node
 from communication_interfaces.msg import RangeData
 from rclpy.qos import qos_profile_sensor_data
-from ros2swarm.movement_pattern.movement_pattern import MovementPattern
+from ros2swarm.behavior_tree.movement_pattern.movement_pattern_bt import MovementPatternBT
 from ros2swarm.utils.state import State
 from ros2swarm.utils.scan_calculation_functions import ScanCalculationFunctions
 from enum import IntEnum, unique
@@ -42,7 +42,7 @@ class Directions(IntEnum):
     RIGHT = 3
 
 
-class MinimalistFlockingPatternBT(MovementPattern, py_trees.behaviour.Behaviour):
+class MinimalistFlockingPatternBT(MovementPatternBT, py_trees.behaviour.Behaviour):
     """
     Pattern to perform a flocking of the participating robots in the available area.
 
@@ -53,7 +53,7 @@ class MinimalistFlockingPatternBT(MovementPattern, py_trees.behaviour.Behaviour)
 
     def __init__(self):
         """Initialize the minimalist flocking pattern node."""
-        MovementPattern.__init__(self,'minimalist_flocking_pattern')
+        MovementPatternBT.__init__(self,'minimalist_flocking_pattern')
         py_trees.behaviour.Behaviour.__init__(self,'minimalist_flocking_pattern')
 
         self.declare_parameters(
@@ -94,7 +94,7 @@ class MinimalistFlockingPatternBT(MovementPattern, py_trees.behaviour.Behaviour)
         self.range_data_subscription = self.create_subscription(
             RangeData,
             self.get_namespace() + '/range_data',
-            self.swarm_command_controlled(self.range_data_callback),
+            self.range_data_callback,
             qos_profile=qos_profile_sensor_data
         )
 

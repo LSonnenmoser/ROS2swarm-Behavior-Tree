@@ -17,15 +17,15 @@ import py_trees
 
 from geometry_msgs.msg import Twist
 import random
-from ros2swarm.movement_pattern.movement_pattern import MovementPattern
+from ros2swarm.behavior_tree.movement_pattern.movement_pattern_bt import MovementPatternBT
 from ros2swarm.utils import setup_node
 
 
-class RandomWalkPatternBT(MovementPattern, py_trees.behaviour.Behaviour):
+class RandomWalkPatternBT(MovementPatternBT, py_trees.behaviour.Behaviour):
 
     def __init__(self):
         """Initialize the random walk pattern node."""
-        MovementPattern.__init__(self,'random_walk')
+        MovementPatternBT.__init__(self,'random_walk')
         py_trees.behaviour.Behaviour.__init__(self,'random_walk')
         self.declare_parameters(
             namespace='',
@@ -53,10 +53,10 @@ class RandomWalkPatternBT(MovementPattern, py_trees.behaviour.Behaviour):
 
         
 
-        self.walk = self.create_timer(5, self.swarm_command_controlled_timer(self.random))
+        self.walk = self.create_timer(5, self.random)
         self.timer = self.create_timer(
             self.get_parameter("random_walk_timer_period").get_parameter_value().double_value,
-            self.swarm_command_controlled_timer(self.timer_callback))
+            self.timer_callback)
         self.param_x = float(self.get_parameter("random_walk_linear").get_parameter_value().double_value)
         self.param_z = float(
             self.get_parameter("random_walk_angular").get_parameter_value().double_value)

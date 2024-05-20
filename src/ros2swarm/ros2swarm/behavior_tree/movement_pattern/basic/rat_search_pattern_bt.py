@@ -23,7 +23,7 @@ from ros2swarm.utils.maze_graph import MazeGraph
 from sensor_msgs.msg import LaserScan
 from sensor_msgs.msg import Image
 from rclpy.qos import qos_profile_sensor_data
-from ros2swarm.movement_pattern.movement_pattern import MovementPattern
+from ros2swarm.behavior_tree.movement_pattern.movement_pattern_bt import MovementPatternBT
 
 from ros2swarm.utils.scan_calculation_functions import ScanCalculationFunctions
 
@@ -61,14 +61,14 @@ def pol2cart(r, phi):
     #TODO move to a vector util place
 
 
-class RatSearchPatternBT(MovementPattern, py_trees.behaviour.Behaviour):
+class RatSearchPatternBT(MovementPatternBT, py_trees.behaviour.Behaviour):
     """
     Pattern to search a maze based on rat behavior.
     """
 
     def __init__(self):
         """Initialize the rat search pattern node."""
-        MovementPattern.__init__(self,'rat_search_pattern')
+        MovementPatternBT.__init__(self,'rat_search_pattern')
         py_trees.behaviour.Behaviour.__init__(self,'rat_search_pattern')
         self.declare_parameters(
             namespace='',
@@ -105,14 +105,14 @@ class RatSearchPatternBT(MovementPattern, py_trees.behaviour.Behaviour):
         self.scan_subscription = self.create_subscription(
             LaserScan,
             self.get_namespace() + '/scan',
-            self.swarm_command_controlled(self.scan_callback),
+            self.scan_callback,
             qos_profile=qos_profile_sensor_data
         )
 
         self.camera_subscription = self.create_subscription(
             Image,
             self.get_namespace() + '/camera/image_raw',
-            self.swarm_command_controlled(self.camera_callback),
+            self.camera_callback,
             qos_profile=qos_profile_sensor_data
         )
 
@@ -154,7 +154,7 @@ class RatSearchPatternBT(MovementPattern, py_trees.behaviour.Behaviour):
         timer_period = float(self.get_parameter(
             "rat_search_timer_period").get_parameter_value().double_value)
 
-        self.timer = self.create_timer(timer_period, self.swarm_command_controlled_timer(self.timer_callback))
+        self.timer = self.create_timer(timer_period, self.timer_callback)
 
         self.state = State.INIT
         self.current_scan = None

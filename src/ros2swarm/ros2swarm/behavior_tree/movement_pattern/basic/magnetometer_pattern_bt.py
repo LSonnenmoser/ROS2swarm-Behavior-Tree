@@ -23,10 +23,10 @@ from geometry_msgs.msg import Twist
 from ros2swarm.utils import setup_node
 from sensor_msgs.msg import MagneticField
 from rclpy.qos import qos_profile_sensor_data
-from ros2swarm.movement_pattern.movement_pattern import MovementPattern
+from ros2swarm.behavior_tree.movement_pattern.movement_pattern_bt import MovementPatternBT
 
 
-class MagnetometerPatternBT(MovementPattern, py_trees.behaviour.Behaviour):
+class MagnetometerPatternBT(MovementPatternBT, py_trees.behaviour.Behaviour):
     """
     Pattern to reach an orientation of the robot according to the given parameter.
 
@@ -38,7 +38,7 @@ class MagnetometerPatternBT(MovementPattern, py_trees.behaviour.Behaviour):
 
     def __init__(self):
         """Initialize the magnetometer pattern node."""
-        MovementPattern.__init__(self,'magnetometer_pattern')
+        MovementPatternBT.__init__(self,'magnetometer_pattern')
         py_trees.behaviour.Behaviour.__init__(self,'magnetometer_pattern')
         self.declare_parameters(
             namespace='',
@@ -68,7 +68,7 @@ class MagnetometerPatternBT(MovementPattern, py_trees.behaviour.Behaviour):
         self.magnetometer_subscription = self.create_subscription(
             MagneticField,
             self.get_namespace() + '/magnetic_field',
-            self.swarm_command_controlled(self.magnetic_callback),
+            self.magnetic_callback,
             qos_profile=qos_profile_sensor_data
         )
 
