@@ -43,20 +43,19 @@ class RandomWalkPatternBT(MovementPatternBT, py_trees.behaviour.Behaviour):
         
 
     def setup(self): 
-        """Initialize the aggregation pattern node.""" 
+        """Initialize the random walk  pattern node.""" 
 
         self.get_logger().debug("  %s [RandomWalkPattern::setup()]" % self.name)
+
         self.walk = self.create_timer(5, self.random)
         self.timer = self.create_timer(
             self.get_parameter("random_walk_timer_period").get_parameter_value().double_value,
             self.timer_callback)
-
-    def initialise(self):
-        """Initialize the attraction pattern node."""
-        self.get_logger().debug("  %s [RandomWalkPattern::initialise()]" % self.name)
-
         
 
+    def initialise(self):
+        """Initialize the random walk  pattern node."""
+        self.get_logger().debug("  %s [RandomWalkPattern::initialise()]" % self.name)
         self.param_x = float(self.get_parameter("random_walk_linear").get_parameter_value().double_value)
         self.param_z = float(
             self.get_parameter("random_walk_angular").get_parameter_value().double_value)
@@ -87,7 +86,6 @@ class RandomWalkPatternBT(MovementPatternBT, py_trees.behaviour.Behaviour):
 
         self.get_logger().debug("  %s [RandomWalkPattern::terminate().terminate()][%s->%s]" % (self.name, self.status, new_status))
         
-        # MovementPattern.destroy_node(self)
 
 
     def timer_callback(self):

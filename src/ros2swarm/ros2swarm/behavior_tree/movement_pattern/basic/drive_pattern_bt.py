@@ -42,7 +42,7 @@ class DrivePatternBT(MovementPatternBT, py_trees.behaviour.Behaviour):
             ])
     
     def setup(self): 
-        """Initialize the aggregation pattern node.""" 
+        """Initialize the drive pattern node.""" 
 
         self.logger.debug("  %s [DrivePatternBT::setup()]" % self.name)
 
@@ -65,7 +65,7 @@ class DrivePatternBT(MovementPatternBT, py_trees.behaviour.Behaviour):
         """ spin node once """
 
         self.get_logger().debug("  %s [DrivePatternBT::update()]" % self.name)
-
+        self.get_logger().info("  %s [Timer: %i]" % (self.name, self.timer.__timer_period_ns))
         self.feedback_message = "spin drive pattern once"
         rclpy.spin_once(self, timeout_sec=0)
 

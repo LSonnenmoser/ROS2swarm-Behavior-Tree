@@ -52,14 +52,9 @@ class DispersionPatternBT(MovementPatternBT, py_trees.behaviour.Behaviour):
             ])
 
     def setup(self): 
-        """Initialize the aggregation pattern node.""" 
+        """Initialize the dispersion pattern node.""" 
 
         self.get_logger().debug("  %s [Dispersion::setup()]" % self.name)
-
-
-    def initialise(self):
-        """Initialize the attraction pattern node."""
-        self.get_logger().debug("  %s [Dispersion::initialise()]" % self.name)
 
         self.range_data_subscription = self.create_subscription(
             RangeData,
@@ -74,6 +69,11 @@ class DispersionPatternBT(MovementPatternBT, py_trees.behaviour.Behaviour):
             self.max_range_callback,
             10
         )
+
+    def initialise(self):
+        """Initialize the dispersion pattern node."""
+        self.get_logger().debug("  %s [Dispersion::initialise()]" % self.name)
+
 
         self.param_max_range = float(
             self.get_parameter("dispersion_max_range").get_parameter_value().double_value)

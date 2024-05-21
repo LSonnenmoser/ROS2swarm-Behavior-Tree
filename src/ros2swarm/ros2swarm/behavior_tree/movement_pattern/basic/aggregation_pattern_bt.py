@@ -69,18 +69,20 @@ class AggregationPatternBT(MovementPatternBT, py_trees.behaviour.Behaviour):
 
         self.get_logger().debug("  %s [AggregationPatternBT::setup()]" % self.name)
 
-    def initialise(self):
-
-
-        """Initialize the attraction pattern node."""
-        self.get_logger().debug("  %s [AggregationPatternBT::initialise()]" % self.name)
-
         self.range_data_subscription = self.create_subscription(
             RangeData,
             self.get_namespace() + '/range_data',
             self.range_data_callback,
             qos_profile=qos_profile_sensor_data
         )
+
+
+    def initialise(self):
+
+
+        """Initialize the aggregation pattern node."""
+        self.get_logger().debug("  %s [AggregationPatternBT::initialise()]" % self.name)
+
 
         self.param_max_range = float(
             self.get_parameter("aggregation_max_range").get_parameter_value().double_value)

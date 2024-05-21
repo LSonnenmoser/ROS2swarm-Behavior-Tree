@@ -55,13 +55,9 @@ class AttractionPattern2BT(MovementPatternBT, py_trees.behaviour.Behaviour):
 
 
     def setup(self): 
-        """Initialize the aggregation pattern node.""" 
+        """Initialize the attraction pattern node.""" 
 
         self.get_logger().debug("  %s [Attraction2::setup()]" % self.name)
-
-    def initialise(self):
-        """Initialize the attraction pattern node."""
-        self.get_logger().debug("  %s [Attraction2::initialise()]" % self.name)
 
         self.scan_subscription = self.create_subscription(
             RangeData,
@@ -69,6 +65,11 @@ class AttractionPattern2BT(MovementPatternBT, py_trees.behaviour.Behaviour):
             self.range_data_callback,
             qos_profile=qos_profile_sensor_data
         )
+
+    def initialise(self):
+        """Initialize the attraction pattern node."""
+        self.get_logger().debug("  %s [Attraction2::initialise()]" % self.name)
+
 
         self.param_max_range = float(
             self.get_parameter("attraction2_max_range").get_parameter_value().double_value)

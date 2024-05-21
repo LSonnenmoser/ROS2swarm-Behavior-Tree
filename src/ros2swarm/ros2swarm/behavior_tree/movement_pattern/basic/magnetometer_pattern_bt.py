@@ -54,16 +54,10 @@ class MagnetometerPatternBT(MovementPatternBT, py_trees.behaviour.Behaviour):
             ])
         
     def setup(self): 
-        """Initialize the aggregation pattern node.""" 
+        """Initialize the magnetometer pattern node.""" 
 
         self.get_logger().debug("  %s [Magnetometerpattern::setup()]" % self.name)
 
-
-        self.test_output = self.create_publisher(Twist, self.get_namespace() + '/test_output', 10)
-
-    def initialise(self):
-        """Initialize the attraction pattern node."""
-        self.get_logger().debug("  %s [Magnetometerpattern::initialise()]" % self.name)
 
         self.magnetometer_subscription = self.create_subscription(
             MagneticField,
@@ -71,6 +65,12 @@ class MagnetometerPatternBT(MovementPatternBT, py_trees.behaviour.Behaviour):
             self.magnetic_callback,
             qos_profile=qos_profile_sensor_data
         )
+        self.test_output = self.create_publisher(Twist, self.get_namespace() + '/test_output', 10)
+
+    def initialise(self):
+        """Initialize the magnetometer pattern node."""
+        self.get_logger().debug("  %s [Magnetometerpattern::initialise()]" % self.name)
+
 
         self.param_target_direction_x = float(
             self.get_parameter(
