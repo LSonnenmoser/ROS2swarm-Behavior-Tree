@@ -16,8 +16,8 @@ class RedImageDetection(py_trees.behaviour.Behaviour, Node):
     """
     If not enough red pixels are detetected the condition returns SUCCESS, else FAILURE"""
     def __init__(self):
-        py_trees.behaviour.Behaviour().__init__("avoid")
-        Node().__init__("avoid")
+        Node().__init__("red_image_detection")
+        py_trees.behaviour.Behaviour().__init__("red_image_detection")
         self.RedDetected = False
 
     def setup(self):

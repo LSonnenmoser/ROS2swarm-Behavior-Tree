@@ -13,8 +13,8 @@ from ros2swarm.utils.scan_calculation_functions import ScanCalculationFunctions
 
 class Obstacle_detection(py_trees.behaviour.Behaviour, Node):
     def __init__(self):
-        py_trees.behaviour.Behaviour.__init__(self,"obstacle_detection")
         Node.__init__(self,"obstacle_detection")
+        py_trees.behaviour.Behaviour.__init__(self,"obstacle_detection")
         self.obstacle_free = False
         self.declare_parameters(
             namespace='',
@@ -54,5 +54,5 @@ class Obstacle_detection(py_trees.behaviour.Behaviour, Node):
         before  = self.obstacle_free
         self.obstacle_free = ScanCalculationFunctions.is_obstacle_free(self.param_max_range, ranges, self.param_threshold)
         if before != self.obstacle_free:
-            print("It is now obstacle free: ", self.obstacle_free)
+            self.get_logger().info("It is now obstacle free: ", self.obstacle_free)
         
