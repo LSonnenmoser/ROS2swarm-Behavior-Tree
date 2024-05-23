@@ -33,8 +33,12 @@ source ./install/setup.bash &&
 # to add heterogeneous swarm / robots  
 # bash add_robots_to_simulation.sh 
 # total_robots: int - total number of robots when using add_robots to create heterogeneous swarm 
- 
-# gazebo_world arena_large.world | arena.world | empty.world | turtle.world | 560x540m.world | Ymaze.world | Ymaze_camber.world | Ymaze_camber_top.world
+# note for turtlebot4: every turtlebot needs his own terminal, so use spawn for multiple robots
+
+# ignition world for turtlebot4:
+# arena_large | ignition
+
+# gazebo_world: arena_large.world | arena.world | empty.world | turtle.world | 560x540m.world | Ymaze.world | Ymaze_camber.world | Ymaze_camber_top.world
 
 # pattern: pattern_name
 ## movement pattern:

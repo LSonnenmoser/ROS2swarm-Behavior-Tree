@@ -27,6 +27,7 @@ The ICRA 2022 paper "ROS2swarm - A ROS 2 Package for Swarm Robot Behaviors" refe
   - [Package structure](#contained_packages)
 - [Required software](#required_software)
 - [Using the Thymio model and the modified TurtleBot3 models](#modified-models)
+- [Turtlebot4 and Behavior Tree](#turtlebot4_and_behavior_tree)
 
 ROS2swarm is available for the ROS 2 Versions 
 [Dashing (dashing-dev)](https://github.com/ROS2swarm/ROS2swarm/tree/dashing-dev), 
@@ -265,3 +266,54 @@ robots:=waffle_pi_name_of_modification
 ```
 source ~/turtlebot3_ws/install/setup.bash
 ```
+
+
+<a name="turtlebot4_and_behavior_tree"></a>
+### **Turtlebot4 and Behavior tree**
+
+
+#### Turtlebot4 in Gazebo Ignition
+
+At the moment there are some problems with spawning multiple Turtlebot4s in gazebo and gazebo ignition.
+
+* The Gazebo PLugins needs therefore to be removed from the xarco files of the robot, they are therefore added in the world file.
+
+* It seems like every Robot needs his own thread and therefore own terminal, so you can only spawn 1 robot with the start_simulation.sh script, but can add single robots with the add_robot_to_simulation.sh sript. 
+
+* If no Scan Data is published control if the wolrd name is similar to the world file name and is written between single ' and not doubled " marks.
+
+  * For the simulation of the Turtlebot4 there are at the moment the world files igntion and arena_large.
+
+* The Turtlebot4 has also some slight problems identifing other robots as robots instead of obstacles.
+
+* Reloading the simulator and restarting the ros2 daemon often helps with problems in the setup process.
+
+
+#### Behavior Tree
+
+There is a behavior-tree-pattern available, the behavior tree can be configured with different behaviors and conditions in the file
+```
+src/ros2swarm/ros2swarm/movement_pattern/combined/behavior_tree_pattern.py
+```
+the py_tree package is used, make sure to have it installed, it provides a selector, a sequence and a parallel node.
+
+
+All currently available behaviors have a modified version and are available to be used as leaves in the tree.
+
+Three conditions are currently available:
+
+* Timer(int): switches between success and failure given a time
+
+* Obstacle_detection(): returns Failure if the lidar registers in the choosen range (in the config file) detects an obstacle
+
+* Red_image_detection(): returns Success only if the rgb camera registers enough red
+
+
+New behaviors/conditions can be added to the following folder:
+```
+src/ros2swarm/ros2swarm/behavior_tree
+```
+There is also an example behavior pattern given.
+Also add/change the parameters in the behavior tree config file (.yaml), it is different for every robot type.
+
+The current configuration of the behavior treee uses the red image detection to drive towards red and turns on the spot if there is no red detected.   
