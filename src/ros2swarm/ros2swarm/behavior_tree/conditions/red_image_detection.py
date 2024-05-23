@@ -5,29 +5,34 @@ from sensor_msgs.msg import Image
 from py_trees.common import Status
 import cv2
 from cv_bridge import CvBridge
+from rclpy.node import Node
+import rclpy
 
 
 
 
-class RedImageDetection(py_trees.behaviour.Behaviour):
+
+class RedImageDetection(py_trees.behaviour.Behaviour, Node):
     """
     If not enough red pixels are detetected the condition returns SUCCESS, else FAILURE"""
     def __init__(self):
-        super().__init__("avoid")
+        py_trees.behaviour.Behaviour().__init__("avoid")
+        Node().__init__("avoid")
         self.RedDetected = False
 
     def setup(self):
             self.subscription = self.create_subscription(
             Image,
-            '/Turtlebot4/rgb_camera',
+            self.get_namespace() +'/rgb_camera',
             self.image_callback,
             1
         )
 
     def initialise(self) -> None:
-        self.RedDetected = False
+        pass
 
     def update(self) -> Status:
+        rclpy.spin_once(self, timeout_sec=0)
         if self.RedDetected:
             return py_trees.common.Status.FAILURE
         return py_trees.common.Status.SUCCESS

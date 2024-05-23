@@ -85,11 +85,6 @@ class MinimalistFlockingPatternBT(MovementPatternBT, py_trees.behaviour.Behaviou
 
         self.get_logger().debug("  %s [MinimalistFlocking::setup()]" % self.name)
 
-
-    def initialise(self):
-        """Initialize the attraction pattern node."""
-        self.get_logger().debug("  %s [MinimalistFlocking::initialise()]" % self.name)
-
         # sensor subscription
         self.range_data_subscription = self.create_subscription(
             RangeData,
@@ -97,6 +92,11 @@ class MinimalistFlockingPatternBT(MovementPatternBT, py_trees.behaviour.Behaviou
             self.range_data_callback,
             qos_profile=qos_profile_sensor_data
         )
+
+    def initialise(self):
+        """Initialize the attraction pattern node."""
+        self.get_logger().debug("  %s [MinimalistFlocking::initialise()]" % self.name)
+
 
         # global parameters
         self.param_translational_velocity = self.get_parameter(

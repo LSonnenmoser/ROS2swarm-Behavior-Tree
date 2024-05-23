@@ -14,6 +14,7 @@
 from geometry_msgs.msg import Twist
 import py_trees
 
+from ros2swarm.behavior_tree.conditions.red_image_detection import RedImageDetection
 from ros2swarm.utils import setup_node
 
 
@@ -38,10 +39,9 @@ class BehaviorTreePattern(AbstractPattern):
 
     def __init__(self):
         """
-        Initialize the common movement pattern functions.
+        Initialize behavor treee node
 
-        Passes the node name to the super node and creates the drive command topic,
-        which is available for all movement patterns
+        Passes the node name to the super node and subscribes to the swarm command
         """
         
         super().__init__('behavior_tree')
@@ -55,13 +55,14 @@ class BehaviorTreePattern(AbstractPattern):
         self.current_msg = Twist()
         self.i = 0
         
+        #starts callback after swarm command
         self.timer= self.create_timer(0, self.swarm_command_controlled_timer(self.timer_callback))
 
 
 
 
     def timer_callback(self):
-            """Publish the configured twist message when called."""
+            """Tick the behaviortree."""
             if self.i==0:
                  self.get_logger().info('started')
             self.root.tick_once()
@@ -69,15 +70,41 @@ class BehaviorTreePattern(AbstractPattern):
             # self.get_logger().info('Ticking'+ str(self.i))
             self.i += 1
 
+
     def formBehaviorTree(self):
         """ Create and setup the behavior tree
         BT nodes:
-            py_trees.composites.Sequence(name, memory)
-            py_trees.composites.Selector(name, memory)
-            py.trees.composites.Parallel(name, policy)
+            py_trees.composites.Sequence(name, memory, children)
+            py_trees.composites.Selector(name, memory, children)
+            py.trees.composites.Parallel(name, policy, children)
+
             RandomwalkPatternBT()
+            AggregationPatternBT(),
+            AttractionPatternBT(),
+            AttractionPattern2BT(),
+            DispersionPatternBT(),
+            DrivePatternBT(), 
+            MagnetometerPatternBT(),
+            MinimalistFlockingPatternBT(),
+            RandomWalkPatternBT(),
+            RatSearchPatternBT(),
+            TurnPatternBT(),
+
+            Timer()
+            Obstacle_detection()
+            RedImageDetection()
+
+
+            For a new Behavior add it like the example_pattern_bt.py to the behaviortree folder and add the parameters to the config file of the behaviortrees for every robot.
+
+
+            every node/leaf used in the behavior tree needs to be a unique node/object
+            every node needs to be initializied and setup before they are getting ticked
         """
-        patterns=[
+        self.get_logger().info('Publishing : Setup.')
+
+        # initialize
+        behaviors=[
                 AggregationPatternBT(),
                 AttractionPatternBT(),
                 AttractionPattern2BT(),
@@ -89,30 +116,38 @@ class BehaviorTreePattern(AbstractPattern):
                 RatSearchPatternBT(),
                 TurnPatternBT(),
                 ]
-        condition = Timer(5)
-        # condition3 = Timer(5)
-        # condition2 = Obstacle_detection()
-        # drive = py_trees.composites.Sequence('drive', False, children=[condition2, patterns[1]])
-        # drive_turn = py_trees.composites.Sequence("drive_turn", False, children=[condition3, patterns[2]])
-        # turn = py_trees.composites.Selector("turn", False, children=[drive_turn, patterns[3]])
-        # self.root = py_trees.composites.Selector("root", False, children=[drive,patterns[0]])
-        # self.get_logger().info('Publishing : Setup.')
+        conditions = [Timer(5),
+                      Obstacle_detection(),
+                      RedImageDetection()
+        ]
 
-        # condition.setup()
-        # condition2.setup()
-        # condition3.setup()
-        # self.root=py_trees.composites.Sequence("root", False, [condition,patterns[2]])
-        self.root=patterns[7]
-
-        for pattern in patterns:
+        # setup
+        for pattern in behaviors:
             pattern.setup()
+        
+        for condition in conditions:
+             condition.setup() 
 
+        # form behavior tree
+        """
+        exampe behavior tree:
+        drive straight until obstacle is detected, as long as there is a obstacle turn on place,
+        keep in mind that there is a hardware protection layer, you can change the parameters like the range in the conifg file
+
+                                    ||
+                        ->                      Turn
+                obstacle    Drive               Pattern
+                detection   pattern
+        """
+
+        self.root = py_trees.composites.Selector("root", False, children=[drive,behaviors[9]])
+        drive = py_trees.composites.Sequence('drive', False, children=[conditions[1], behaviors[4]])
 
 
 
 
 def main(args=None):
-    """Create a node for the attraction pattern, spins it and handles the destruction."""
+    """Create a node for the behavior tree and ticks it"""
     setup_node.init_and_spin(args, BehaviorTreePattern)
 
 if __name__ == '__main__':

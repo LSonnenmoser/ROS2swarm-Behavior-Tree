@@ -16,7 +16,7 @@ from rclpy.node import Node
 
 
 class MovementPatternBT(Node):
-    """The base class for patterns which include movement."""
+    """The base class for patterns which include movement, but don't need to subscribe to the swarm command."""
 
     def __init__(self, node_name):
         """
