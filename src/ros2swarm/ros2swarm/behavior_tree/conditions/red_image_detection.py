@@ -23,7 +23,7 @@ class RedImageDetection(py_trees.behaviour.Behaviour, Node):
     def setup(self):
             self.subscription = self.create_subscription(
             Image,
-            self.get_namespace() +'/rgb_camera',
+            self.get_namespace() +'/oakd/rgb/preview/image_raw',
             self.image_callback,
             1
         )
@@ -34,8 +34,8 @@ class RedImageDetection(py_trees.behaviour.Behaviour, Node):
     def update(self) -> Status:
         rclpy.spin_once(self, timeout_sec=0)
         if self.RedDetected:
-            return py_trees.common.Status.FAILURE
-        return py_trees.common.Status.SUCCESS
+            return py_trees.common.Status.SUCCESS
+        return py_trees.common.Status.FAILURE
     
     def image_callback(self, msg):
 

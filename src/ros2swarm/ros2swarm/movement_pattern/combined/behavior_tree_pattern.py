@@ -131,17 +131,17 @@ class BehaviorTreePattern(AbstractPattern):
         # form behavior tree
         """
         exampe behavior tree:
-        drive straight until obstacle is detected, as long as there is a obstacle turn on place,
+        as long as the camera captures red drive forward, else turn 
         keep in mind that there is a hardware protection layer, you can change the parameters like the range in the conifg file
 
                                     ||
                         ->                      Turn
-                obstacle    Drive               Pattern
-                detection   pattern
+                Red         Drive               Pattern
+                detected    pattern
         """
 
+        drive = py_trees.composites.Sequence('drive', False, children=[conditions[2], behaviors[4]])
         self.root = py_trees.composites.Selector("root", False, children=[drive,behaviors[9]])
-        drive = py_trees.composites.Sequence('drive', False, children=[conditions[1], behaviors[4]])
 
 
 
